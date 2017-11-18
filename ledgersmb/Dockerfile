@@ -9,7 +9,8 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 # add it, because it's a 'recommends' it the dep tree, which
 # we're skipping, normally
 RUN DEBIAN_FRONTENT=noninteractive && \
-  curl -sL https://deb.nodesource.com/setup | bash - && \
+  apt-get update && apt-get -y install curl && \
+  ( curl -sL https://deb.nodesource.com/setup | bash - ) && \
   apt-get update && apt-get -y install \
   libcgi-emulate-psgi-perl libconfig-inifiles-perl \
   libdbd-pg-perl libdbi-perl libdatetime-perl \
