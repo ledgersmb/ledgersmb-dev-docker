@@ -10,7 +10,8 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 # we're skipping, normally
 RUN DEBIAN_FRONTENT=noninteractive && \
   apt-get update && apt-get -y install curl && \
-  ( curl -sL https://deb.nodesource.com/setup | bash - ) && \
+  curl -sL https://deb.nodesource.com/setup -o /tmp/setup && \
+  sh /tmp/setup && rm /tmp/setup && \
   apt-get update && apt-get -y install \
   libcgi-emulate-psgi-perl libconfig-inifiles-perl \
   libdbd-pg-perl libdbi-perl libdatetime-perl \
@@ -50,20 +51,15 @@ ARG CACHEBUST
 
 # Install LedgerSMB
 RUN cd /srv && \
-  git clone --recursive -b $LSMB_VERSION https://github.com/ledgersmb/LedgerSMB.git ledgersmb
-
-WORKDIR /srv/ledgersmb
-
-# master requirements
-RUN cpanm --quiet --notest \
-  --with-develop \
-  --with-feature=starman \
-  --with-feature=latex-pdf-ps \
-  --with-feature=openoffice \
-  --installdeps .
-
-# Build dojo
-RUN make dojo
+  git clone -b $LSMB_VERSION https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
+  cd ledgersmb && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --installdeps . && \
+  cd .. && rm -rf ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
 
