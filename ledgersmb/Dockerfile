@@ -9,6 +9,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 # add it, because it's a 'recommends' it the dep tree, which
 # we're skipping, normally
 RUN DEBIAN_FRONTENT=noninteractive && \
+  curl -sL https://deb.nodesource.com/setup | sudo -E bash - && \
   apt-get update && apt-get -y install \
   libcgi-emulate-psgi-perl libconfig-inifiles-perl \
   libdbd-pg-perl libdbi-perl libdatetime-perl \
@@ -33,12 +34,11 @@ RUN DEBIAN_FRONTENT=noninteractive && \
   libxml-twig-perl libopenoffice-oodoc-perl \
   postgresql-client \
   ssmtp \
-  git cpanminus make gcc npm libperl-dev lsb-release libcarp-always-perl \
+  git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
   libtap-parser-sourcehandler-pgtap-perl libtest-dependencies-perl \
   libtest-exception-perl libtest-trap-perl libperl-critic-perl \
   libmodule-cpanfile-perl libfile-util-perl \
   python-pip python-urllib3 python-six && \
-  update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100 && \
   pip install transifex-client && \
   npm install -g uglify-js@">=2.0 <3.0"
 
