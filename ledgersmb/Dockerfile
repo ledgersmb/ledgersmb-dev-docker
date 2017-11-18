@@ -8,11 +8,12 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 # Without libclass-c3-xs-perl, everything grinds to a halt;
 # add it, because it's a 'recommends' it the dep tree, which
 # we're skipping, normally
-RUN DEBIAN_FRONTENT=noninteractive && \
-  apt-get update && apt-get -y install curl && \
-  curl -sL https://deb.nodesource.com/setup -o /tmp/setup && \
-  sh /tmp/setup && rm /tmp/setup && \
-  apt-get update && apt-get -y install \
+RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates gnupg2 && \
+  curl -L https://deb.nodesource.com/setup_6.x -o ./setup && \
+  bash ./setup && rm ./setup && \
+  DEBIAN_FRONTEND=noninteractive apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
   libcgi-emulate-psgi-perl libconfig-inifiles-perl \
   libdbd-pg-perl libdbi-perl libdatetime-perl \
   libdatetime-format-strptime-perl libfile-mimeinfo-perl \
