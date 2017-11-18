@@ -1,4 +1,4 @@
-FROM        debian:jessie
+FROM        debian:stretch
 MAINTAINER  Freelock john@freelock.com
 
 RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> /etc/apt/apt.conf
