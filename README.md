@@ -18,7 +18,7 @@ a LedgerSMB Git repository to exist in the current directory.
 
 By running:
 
- $ LSMB_DEV_VERSION=master docker-compose -f <path> up -d
+   $ LSMB_DEV_VERSION=master docker-compose -f <path> up -d
 
 
 an execution environment is wrapped around the local repository. `<path>`
