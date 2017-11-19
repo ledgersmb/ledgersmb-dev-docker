@@ -8,54 +8,68 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 # Without libclass-c3-xs-perl, everything grinds to a halt;
 # add it, because it's a 'recommends' it the dep tree, which
 # we're skipping, normally
+
+# 'master' and common dependency install:
+
 RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates gnupg2 && \
   curl -L https://deb.nodesource.com/setup_6.x -o ./setup && \
   bash ./setup && rm ./setup && \
   DEBIAN_FRONTEND=noninteractive apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
-  libcgi-emulate-psgi-perl libconfig-inifiles-perl \
-  libdbd-pg-perl libdbi-perl libdatetime-perl \
-  libdatetime-format-strptime-perl libfile-mimeinfo-perl \
-  libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
-  libcpanel-json-xs-perl liblist-moreutils-perl \
-  liblocale-maketext-perl liblocale-maketext-lexicon-perl \
-  liblog-log4perl-perl libwww-perl libmime-lite-perl \
-  libmodule-runtime-perl libmath-bigint-gmp-perl libmoose-perl \
-  libmoosex-nonmoose-perl libnumber-format-perl \
-  libpgobject-perl libpgobject-simple-perl libpgobject-simple-role-perl \
-  libpgobject-type-bigfloat-perl libpgobject-type-bytestring-perl \
-  libpgobject-type-datetime-perl libpgobject-util-dbmethod-perl \
-  libplack-perl libplack-middleware-reverseproxy-perl libtemplate-perl \
-  libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
-  libnamespace-autoclean-perl \
-  libtemplate-plugin-latex-perl libtex-encode-perl \
-  libmoosex-nonmoose-perl libclass-c3-xs-perl \
-  texlive-latex-recommended \
-  texlive-xetex \
-  starman \
-  libxml-twig-perl libopenoffice-oodoc-perl \
-  postgresql-client \
-  ssmtp \
-  git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
-  libtap-parser-sourcehandler-pgtap-perl libtest-dependencies-perl \
-  libtest-exception-perl libtest-trap-perl libperl-critic-perl \
-  libmodule-cpanfile-perl libfile-util-perl \
-  libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
-  libmodule-install-perl \
+    libcgi-emulate-psgi-perl libconfig-inifiles-perl \
+    libdbd-pg-perl libdbi-perl libdatetime-perl \
+    libdatetime-format-strptime-perl libfile-mimeinfo-perl \
+    libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
+    libcpanel-json-xs-perl liblist-moreutils-perl \
+    liblocale-maketext-perl liblocale-maketext-lexicon-perl \
+    liblog-log4perl-perl libwww-perl libmime-lite-perl \
+    libmodule-runtime-perl libmath-bigint-gmp-perl libmoose-perl \
+    libmoosex-nonmoose-perl libnumber-format-perl \
+    libpgobject-perl libpgobject-simple-perl libpgobject-simple-role-perl \
+    libpgobject-type-bigfloat-perl libpgobject-type-bytestring-perl \
+    libpgobject-type-datetime-perl libpgobject-util-dbmethod-perl \
+    libplack-perl libplack-middleware-reverseproxy-perl libtemplate-perl \
+    libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
+    libnamespace-autoclean-perl \
+    libtemplate-plugin-latex-perl libtex-encode-perl \
+    libmoosex-nonmoose-perl libclass-c3-xs-perl \
+    texlive-latex-recommended \
+    texlive-xetex \
+    starman \
+    libxml-twig-perl libopenoffice-oodoc-perl \
+    postgresql-client \
+    ssmtp \
+    git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
+    libtap-parser-sourcehandler-pgtap-perl libtest-dependencies-perl \
+    libtest-exception-perl libtest-trap-perl libperl-critic-perl \
+    libmodule-cpanfile-perl libfile-util-perl \
+    libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
+    libmodule-install-perl \
   python-pip python-urllib3 python-six && \
   pip install transifex-client && \
   npm install -g uglify-js@">=2.0 <3.0"
 
+# 1.5 additional dependency install:
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
+      libcgi-simple-perl
+
 # Build time variables
 ENV NODE_PATH /usr/local/lib/node_modules
-ENV LSMB_VERSION master
 ARG CACHEBUST
 
 # Install LedgerSMB
 RUN cd /srv && \
-  git clone -b $LSMB_VERSION https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
+  git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --installdeps . && \
+  git checkout -b origin/1.5 && \
   cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
