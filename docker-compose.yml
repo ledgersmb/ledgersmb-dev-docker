@@ -1,0 +1,28 @@
+version: "3.2"
+services:
+  db:
+    image: ledgersmb/ledgersmb-dev-postgres
+    container_name: postgres-lsmb-${LSMB_DEV_VERSION}-devel
+    environment:
+      POSTGRES_PASSWORD: abc
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+#  selenium:
+#    image:
+  lsmb:
+    depends_on:
+      - db
+    image: ledgersmb/ledgersmb-dev-lsmb
+    container_name: lsmb-${LSMB_DEV_VERSION}-devel
+    links:
+      - "db:postgres"
+    volumes:
+      - type: bind
+        target: /srv/ledgersmb
+        source: ${PWD}
+
+
+volumes:
+  dbdata:
+
