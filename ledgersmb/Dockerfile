@@ -53,7 +53,7 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
 # 1.5 additional dependency install:
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
-      libcgi-simple-perl
+      libcgi-simple-perl libhttp-exception-perl
 
 # Build time variables
 ENV NODE_PATH /usr/local/lib/node_modules
@@ -69,7 +69,7 @@ RUN cd /srv && \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
     --installdeps . && \
-  git checkout -b origin/1.5 && \
+  git checkout -b 1.5 origin/1.5 && \
   cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
