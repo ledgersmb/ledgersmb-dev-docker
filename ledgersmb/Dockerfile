@@ -62,6 +62,7 @@ RUN cd /srv && \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
     --installdeps . && \
+  rm -rf ~/.cpanm && \
   cd .. && rm -rf ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
