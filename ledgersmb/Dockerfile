@@ -112,4 +112,6 @@ EXPOSE 5762
 RUN chown www-data /srv/ledgersmb
 USER www-data
 
+WORKDIR /srv/ledgersmb
+
 CMD ["start.sh"]
