@@ -8,11 +8,16 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "dbdata:/var/lib/postgresql/data"
-#  selenium:
-#    image:
+  selenium:
+    image: wernight/phantomjs:2.1.1
+    container_name: selenium-${LSMB_DEV_VERSION}-devel
+    command: phantomjs --webdriver=4422
+    expose:
+      - 4422
   lsmb:
     depends_on:
       - db
+      - selenium
     image: ledgersmb/ledgersmb-dev-lsmb
     container_name: lsmb-${LSMB_DEV_VERSION}-devel
     links:
@@ -21,6 +26,14 @@ services:
       - type: bind
         target: /srv/ledgersmb
         source: ${PWD}
+    environment:
+      LSMB_BASE_URL: http://lsmb-${LSMB_DEV_VERSION}-devel:5762/
+      LSMB_TEST_DB: 1
+      LSMB_NEW_DB: lsmbtestdb
+      REMOTE_SERVER_ADDR: selenium
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: abc
 
 
 volumes:
