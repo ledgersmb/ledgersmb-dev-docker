@@ -12,6 +12,7 @@ services:
     image: wernight/phantomjs:2.1.1
     container_name: selenium-${LSMB_DEV_VERSION}-devel
     command: phantomjs --webdriver=4422
+    stop_signal: SIGKILL
     expose:
       - 4422
   lsmb:
