@@ -41,9 +41,9 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
     postgresql-client \
     ssmtp \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
-    libtap-parser-sourcehandler-pgtap-perl libtest-dependencies-perl \
-    libtest-exception-perl libtest-trap-perl libperl-critic-perl \
-    libmodule-cpanfile-perl libfile-util-perl \
+    gettext procps libtap-parser-sourcehandler-pgtap-perl \
+    libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
+    libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
     libmodule-install-perl \
   python-pip python-urllib3 python-six && \
