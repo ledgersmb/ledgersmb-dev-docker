@@ -51,9 +51,9 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
   npm install -g uglify-js@">=2.0 <3.0"
 
 # 1.5 additional dependency install:
-
+#    JRE is for running the dojo build process using ClosureCompiler
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
-      libcgi-simple-perl libhttp-exception-perl
+      libcgi-simple-perl libhttp-exception-perl default-jre-headless
 
 # Build time variables
 ENV NODE_PATH /usr/local/lib/node_modules
