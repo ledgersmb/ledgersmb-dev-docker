@@ -15,6 +15,8 @@ services:
     stop_signal: SIGKILL
     expose:
       - 4422
+    environment:
+      LANG: en_US.UTF-8
   lsmb:
     depends_on:
       - db
