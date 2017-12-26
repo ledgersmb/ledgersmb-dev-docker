@@ -19,6 +19,7 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
     libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libdbd-pg-perl libdbi-perl libdatetime-perl \
+    libspreadsheet-writeexcel-perl \
     libdatetime-format-strptime-perl libfile-mimeinfo-perl \
     libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
     libcpanel-json-xs-perl liblist-moreutils-perl \
@@ -26,15 +27,18 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
     liblog-log4perl-perl libwww-perl libmime-lite-perl \
     libmodule-runtime-perl libmath-bigint-gmp-perl libmoose-perl \
     libmoosex-nonmoose-perl libnumber-format-perl \
+    libole-storage-lite-perl libparse-recdescent-perl \
     libpgobject-perl libpgobject-simple-perl libpgobject-simple-role-perl \
     libpgobject-type-bigfloat-perl libpgobject-type-bytestring-perl \
     libpgobject-type-datetime-perl libpgobject-util-dbmethod-perl \
-    libplack-perl libplack-middleware-reverseproxy-perl libtemplate-perl \
+    libplack-perl libplack-middleware-reverseproxy-perl \
+    libspreadsheet-writeexcel-perl libtemplate-perl \
     libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
     libnamespace-autoclean-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended \
+    libx12-parser-perl
     texlive-xetex \
     starman \
     libxml-twig-perl libopenoffice-oodoc-perl \
@@ -68,6 +72,8 @@ RUN cd /srv && \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
+    --with-feature=xls \
+    --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.5 origin/1.5 && \
   cpanm --quiet --notest \
@@ -75,6 +81,8 @@ RUN cd /srv && \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
+    --with-feature=xls \
+    --with-feature=edi \
     --installdeps . && \
   rm -rf ~/.cpanm && \
   cd .. && rm -rf ledgersmb && mkdir ledgersmb
