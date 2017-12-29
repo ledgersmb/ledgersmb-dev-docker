@@ -38,7 +38,7 @@ RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended \
-    libx12-parser-perl
+    libx12-parser-perl \
     texlive-xetex \
     starman \
     libxml-twig-perl libopenoffice-oodoc-perl \
