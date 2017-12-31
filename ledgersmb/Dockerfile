@@ -1,8 +1,6 @@
 FROM        debian:stretch
 MAINTAINER  Freelock john@freelock.com
 
-RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> /etc/apt/apt.conf
-
 
 # Install Perl, Tex, Starman, psql client, and all dependencies
 # Without libclass-c3-xs-perl, everything grinds to a halt;
@@ -11,8 +9,11 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" >> 
 
 # 'master' and common dependency install:
 
-RUN DEBIAN_FRONTENT=noninteractive apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates gnupg2 && \
+RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
+       >> /etc/apt/apt.conf && \
+  DEBIAN_FRONTEND=noninteractive apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates \
+                                            gnupg2 && \
   curl -L https://deb.nodesource.com/setup_6.x -o ./setup && \
   bash ./setup && rm ./setup && \
   DEBIAN_FRONTEND=noninteractive apt-get update && \
