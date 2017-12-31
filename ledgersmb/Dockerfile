@@ -84,6 +84,7 @@ RUN cd /srv && \
     --with-feature=xls \
     --with-feature=edi \
     --installdeps . && \
+  cpanm --quiet --notest Pod::ProjectDocs && \
   rm -rf ~/.cpanm && \
   cd .. && rm -rf ledgersmb && mkdir ledgersmb
 
