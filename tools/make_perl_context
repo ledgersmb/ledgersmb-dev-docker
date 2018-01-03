@@ -82,11 +82,12 @@ This image can be built by running:
   \$ docker build -t ledgersmb-perl-$perl_version ./$output_dir
 
 Once built, you can launch a LedgerSMB development/test environment
-using docker-compose as follows:
+using docker-compose by changing to the LedgerSMB source directory
+and running:
 
   \$ export LSMB_IMAGE=ledgersmb-perl-$perl_version
   \$ export LSMB_DEV_VERSION=master
-  \$ docker-compose -f ./docker-compose.yml up -d
+  \$ docker-compose -f <path to docker-compose.yml> up -d
 
 END_OF_MESSAGE
 
