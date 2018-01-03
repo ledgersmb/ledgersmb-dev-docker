@@ -86,7 +86,7 @@ using docker-compose as follows:
 
   \$ export LSMB_IMAGE=ledgersmb-perl-$perl_version
   \$ export LSMB_DEV_VERSION=master
-  \$ docker-compose ./docker-compose.yml up -d
+  \$ docker-compose -f ./docker-compose.yml up -d
 
 END_OF_MESSAGE
 
