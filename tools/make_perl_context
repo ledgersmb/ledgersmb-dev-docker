@@ -1,0 +1,145 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use File::Copy;
+
+my $usage = <<END_OF_USAGE;
+Usage: $0 [perl version]
+
+This script creates docker context for building a ledgersmb development
+container using a specific version of perl.
+
+It will create a directory ledgersmb-dev-perl-[perl version] containing
+the docker image build context (Dockerfile, README.md, start.sh and
+associated files).
+
+It is assumed that a directory ./ledgersmb is available containing the
+official ledgersmb-dev-lsmb build context on which the newly created
+context will be based.
+
+END_OF_USAGE
+
+
+# A supported perl version is a required argument
+my $perl_version = $ARGV[0];
+$perl_version or die $usage;
+$perl_version =~ m/^5\.[12][02468]$/
+    or die "$perl_version is not a supported perl version\n";
+
+# Don't overwrite an existing directory
+my $output_dir = "ledgersmb-dev-perl-$perl_version";
+-e $output_dir
+    and die "output directory $output_dir already exists.\n";
+
+# Locate official build context
+my $source_dir = 'ledgersmb';
+-d $source_dir or die "official build context $source_dir does not exist\n";
+
+# Check required source files exist
+my %source_files = (
+    dockerfile   => "$source_dir/Dockerfile",
+    start        => "$source_dir/start.sh",
+    update_ssmtp => "$source_dir/update_ssmtp.sh",
+    readme       => "$source_dir/README.md",
+);
+foreach my $file(values %source_files) {
+    -r $file or die "required source file $file does not exist\n";
+}
+
+
+
+# Write output files
+mkdir $output_dir
+    or die "failed to create output directory $output_dir : $!\n";
+
+write_dockerfile(
+    $source_files{dockerfile},
+    "$output_dir/Dockerfile",
+    $perl_version
+);
+
+copy($source_files{start} => "$output_dir/start.sh")
+    or die "failed to copy $source_files{start} => $output_dir/start.sh : $!\n";
+
+copy($source_files{update_ssmtp} => "$output_dir/update_ssmtp.sh")
+    or die "failed to copy $source_files{update_ssmtp} => $output_dir/update_ssmtp.sh : $!\n";
+
+chmod 0755, "$output_dir/update_ssmtp.sh"
+    or die "failed to change permissions on $output_dir/update_ssmtp.sh : $!\n";
+
+copy($source_files{readme} => "$output_dir/README.md")
+    or die "failed to copy $source_files{readme} => $output_dir/README.md : $!\n";
+
+
+# Work done...
+warn <<END_OF_MESSAGE;
+
+A docker context has been installed at: $output_dir
+
+This image can be built by running:
+
+  \$ docker build -t ledgersmb-perl-$perl_version ./$output_dir
+
+Once built, you can launch a LedgerSMB development/test environment
+using docker-compose as follows:
+
+  \$ export LSMB_IMAGE=ledgersmb-perl-$perl_version
+  \$ export LSMB_DEV_VERSION=master
+  \$ docker-compose ./docker-compose.yml up -d
+
+END_OF_MESSAGE
+
+
+
+
+sub write_dockerfile {
+
+    my ($source_file, $dest_file, $perl_version) = @_;
+
+    # The official Perl 5.1x images use Debian jessie
+    # as their FROM base, wheras the official ledgersmb-dev-lsmb
+    # image uses Debian stretch. When using the earlier perl
+    # images, not all perl library packages are available. These
+    # dependencies cannot be installed using apt-get, but will
+    # instead be handled by cpanm.
+    my @exclude_packages = ();
+    if( $perl_version =~ m/^5.1\d/ ) {
+        @exclude_packages = qw(
+            libpgobject-type-bigfloat-perl
+	    libpgobject-type-bytestring-perl
+	    libpgobject-type-datetime-perl
+        );
+    }
+
+    open my $INFILE, '<', $source_file
+        or die "ERROR opening $source_file for reading : $!\n";
+
+    open my $OUTFILE, '>', $dest_file
+        or die "ERROR opening $dest_file for writing : $!\n";
+
+    # Mostly we copy the official ledgersmb-dev-lsmb Dockerfile
+    # line-for-line, with just a few exceptions.
+    while(<$INFILE>) {
+
+        # Replace FROM base image with official perl image
+        s/^FROM .*$/FROM perl:$perl_version/;
+
+        # Strip excluded packages
+	foreach my $package(@exclude_packages) {
+	        s/(^|\s+)$package\s+/ /g;
+	}
+
+        # If excluding packages leave a line with only a continuation
+	# character, drop it.
+	m/^\s*\\$/ and next; # don't output lines with only a continuation
+
+        print $OUTFILE $_ or die "failed writing to $dest_file : $!\n";
+    }
+
+    close $INFILE;
+    close $OUTFILE or die "error closing $dest_file after writing : $!\n";
+
+    return;
+}
+
