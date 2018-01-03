@@ -109,6 +109,7 @@ sub write_dockerfile {
             libpgobject-type-bigfloat-perl
 	    libpgobject-type-bytestring-perl
 	    libpgobject-type-datetime-perl
+            libx12-parser-perl
         );
     }
 
