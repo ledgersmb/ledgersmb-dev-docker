@@ -35,7 +35,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libplack-perl libplack-middleware-reverseproxy-perl \
     libspreadsheet-writeexcel-perl libtemplate-perl \
     libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
-    libnamespace-autoclean-perl \
+    libnamespace-autoclean-perl libdata-uuid-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended \
