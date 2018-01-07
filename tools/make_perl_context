@@ -14,17 +14,146 @@ It will create a directory ledgersmb-dev-perl-[perl version] containing
 the docker image build context (Dockerfile, README.md, start.sh and
 associated files).
 
-It is assumed that a directory ./ledgersmb is available containing the
+It is assumed that a file ./tools/ledgersmb is available containing the
 official ledgersmb-dev-lsmb build context on which the newly created
 context will be based.
 
 END_OF_USAGE
 
 
+# cpanm commands to install needed perl modules
+# usage depends on perl version, as earlier versions do not
+# support master
+my %cpanm_commands = (
+
+'master' =>
+<<'END_OF_COMMAND',
+  wget https://github.com/ledgersmb/LedgerSMB/raw/master/cpanfile && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-images \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --with-feature=xls \
+    --with-feature=edi \
+    --installdeps . && \
+  rm cpanfile && \
+END_OF_COMMAND
+
+'1.5' =>
+<<'END_OF_COMMAND',
+  wget https://github.com/ledgersmb/LedgerSMB/raw/1.5/cpanfile && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-images \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --with-feature=edi \
+    --installdeps . && \
+  rm cpanfile && \
+END_OF_COMMAND
+
+);
+
+
+
+my $dockerfile = <<'END_OF_DOCKERFILE';
+<% FROM %>
+MAINTAINER  Nick Prater nick@npbroadcast.com
+
+# ledgersmb development and test container created
+# from official perl images.
+
+# Dockerfile based on official ledgersmb/ledgersmb-dev-lsmb
+
+# No point installing perl libraries via apt-get as we're
+# using the official perl container, which doesn't use the
+# debian system libraries.
+#
+# gcc, cpanminus, git are already installed in the base perl image
+
+RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
+       >> /etc/apt/apt.conf && \
+  DEBIAN_FRONTEND=noninteractive apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates \
+                                            gnupg2 && \
+  curl -L https://deb.nodesource.com/setup_6.x -o ./setup && \
+  bash ./setup && rm ./setup && \
+  DEBIAN_FRONTEND=noninteractive apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    postgresql-client \
+    texlive-latex-recommended \
+    texlive-xetex \
+    ssmtp \
+    nodejs lsb-release \
+    gettext procps  \
+  python-pip python-urllib3 python-six && \
+  pip install transifex-client && \
+  npm install -g uglify-js@">=2.0 <3.0"
+
+# 1.5 additional dependency install:
+#    JRE is for running the dojo build process using ClosureCompiler
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
+      default-jre-headless
+
+# Build time variables
+ENV NODE_PATH /usr/local/lib/node_modules
+ARG CACHEBUST
+
+# Install LedgerSMB
+RUN cd /srv && mkdir ledgersmb && cd ledgersmb && \
+<% CPANM_COMMANDS %>
+  cpanm --quiet --notest Pod::ProjectDocs && \
+  rm -rf ~/.cpanm && \
+  cd .. && rm -rf ledgersmb && mkdir ledgersmb
+
+# Configure outgoing mail to use host, other run time variable defaults
+
+## sSMTP
+ENV SSMTP_ROOT ar@example.com
+ENV SSMTP_MAILHUB 172.17.0.1
+ENV SSMTP_HOSTNAME 172.17.0.1
+#ENV SSMTP_USE_STARTTLS
+#ENV SSMTP_AUTH_USER
+#ENV SSMTP_AUTH_PASS
+ENV SSMTP_FROMLINE_OVERRIDE YES
+#ENV SSMTP_AUTH_METHOD
+
+ENV POSTGRES_HOST postgres
+ENV POSTGRES_PORT 5432
+ENV DEFAULT_DB lsmb
+
+COPY start.sh /usr/local/bin/start.sh
+COPY update_ssmtp.sh /usr/local/bin/update_ssmtp.sh
+
+RUN chown www-data /etc/ssmtp /etc/ssmtp/ssmtp.conf && \
+  chmod +x /usr/local/bin/update_ssmtp.sh /usr/local/bin/start.sh && \
+  mkdir -p /var/www
+
+# Work around an aufs bug related to directory permissions:
+RUN mkdir -p /tmp && \
+  chmod 1777 /tmp
+
+# Internal Port Expose
+EXPOSE 5762
+# If ledgersmb.conf does not exist, www-data user needs to be able to create it.
+RUN chown www-data /srv/ledgersmb
+USER www-data
+
+WORKDIR /srv/ledgersmb
+
+CMD ["start.sh"]
+END_OF_DOCKERFILE
+
+
+
+
 # A supported perl version is a required argument
 my $perl_version = $ARGV[0];
 $perl_version or die $usage;
-$perl_version =~ m/^5\.[12][02468]$/
+$perl_version =~ m/^5\.(1[02468]|2[0246])$/
     or die "$perl_version is not a supported perl version\n";
 
 # Don't overwrite an existing directory
@@ -38,7 +167,6 @@ my $source_dir = 'ledgersmb';
 
 # Check required source files exist
 my %source_files = (
-    dockerfile   => "$source_dir/Dockerfile",
     start        => "$source_dir/start.sh",
     update_ssmtp => "$source_dir/update_ssmtp.sh",
     readme       => "$source_dir/README.md",
@@ -48,28 +176,18 @@ foreach my $file(values %source_files) {
 }
 
 
-
 # Write output files
 mkdir $output_dir
     or die "failed to create output directory $output_dir : $!\n";
 
 write_dockerfile(
-    $source_files{dockerfile},
     "$output_dir/Dockerfile",
     $perl_version
 );
 
-copy($source_files{start} => "$output_dir/start.sh")
-    or die "failed to copy $source_files{start} => $output_dir/start.sh : $!\n";
-
-copy($source_files{update_ssmtp} => "$output_dir/update_ssmtp.sh")
-    or die "failed to copy $source_files{update_ssmtp} => $output_dir/update_ssmtp.sh : $!\n";
-
-chmod 0755, "$output_dir/update_ssmtp.sh"
-    or die "failed to change permissions on $output_dir/update_ssmtp.sh : $!\n";
-
-copy($source_files{readme} => "$output_dir/README.md")
-    or die "failed to copy $source_files{readme} => $output_dir/README.md : $!\n";
+copy_file($source_files{start} => "$output_dir/start.sh");
+copy_file($source_files{update_ssmtp} => "$output_dir/update_ssmtp.sh", 0755);
+copy_file($source_files{readme} => "$output_dir/README.md");
 
 
 # Work done...
@@ -93,53 +211,42 @@ END_OF_MESSAGE
 
 
 
+sub copy_file {
+
+    my ($source, $dest, $mask) = @_;
+    copy($source => $dest) or die "failed to copy $source => $dest : $!\n";
+
+    if(defined $mask) {
+        chmod $mask, $dest
+            or die "failed to change permissions on $dest : $!\n";
+    }
+}
+
 
 sub write_dockerfile {
-
-    my ($source_file, $dest_file, $perl_version) = @_;
-
-    # The official Perl 5.1x images use Debian jessie
-    # as their FROM base, wheras the official ledgersmb-dev-lsmb
-    # image uses Debian stretch. When using the earlier perl
-    # images, not all perl library packages are available. These
-    # dependencies cannot be installed using apt-get, but will
-    # instead be handled by cpanm.
-    my @exclude_packages = ();
-    if( $perl_version =~ m/^5.1\d/ ) {
-        @exclude_packages = qw(
-            libpgobject-type-bigfloat-perl
-	    libpgobject-type-bytestring-perl
-	    libpgobject-type-datetime-perl
-            libx12-parser-perl
-        );
-    }
-
-    open my $INFILE, '<', $source_file
-        or die "ERROR opening $source_file for reading : $!\n";
+    my ($dest_file, $perl_version) = @_;
 
     open my $OUTFILE, '>', $dest_file
         or die "ERROR opening $dest_file for writing : $!\n";
 
-    # Mostly we copy the official ledgersmb-dev-lsmb Dockerfile
-    # line-for-line, with just a few exceptions.
-    while(<$INFILE>) {
-
-        # Replace FROM base image with official perl image
-        s/^FROM .*$/FROM perl:$perl_version/;
-
-        # Strip excluded packages
-	foreach my $package(@exclude_packages) {
-	        s/(^|\s+)$package\s+/ /g;
-	}
-
-        # If excluding packages leave a line with only a continuation
-	# character, drop it.
-	m/^\s*\\$/ and next; # don't output lines with only a continuation
-
-        print $OUTFILE $_ or die "failed writing to $dest_file : $!\n";
+    # Build cpanm command according to perl version
+    my $cpanm = '';
+    if($perl_version =~ m/^\d\.1[02]$/) {
+        # master is not supported on this version of perl
+        $cpanm = $cpanm_commands{'1.5'};
+    }
+    else {
+        # master is supported on this perl version
+        $cpanm = $cpanm_commands{'master'} . $cpanm_commands{'1.5'};
     }
 
-    close $INFILE;
+    # Replace FROM base image with official perl image
+    $dockerfile =~ s/<% FROM %>/FROM perl:$perl_version/;
+
+    # Replace placeholder with cpan commands
+    $dockerfile =~ s/<% CPANM_COMMANDS %>(\s*\n)?/$cpanm/;
+
+    print $OUTFILE $dockerfile or die "failed writing to $dest_file : $!\n";
     close $OUTFILE or die "error closing $dest_file after writing : $!\n";
 
     return;
