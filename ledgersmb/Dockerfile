@@ -35,7 +35,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libplack-perl libplack-middleware-reverseproxy-perl \
     libspreadsheet-writeexcel-perl libtemplate-perl \
     libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
-    libnamespace-autoclean-perl \
+    libnamespace-autoclean-perl libdata-uuid-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended \
@@ -71,6 +71,7 @@ RUN cd /srv && \
   cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
+    --with-feature=latex-pdf-images \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
     --with-feature=xls \
@@ -82,7 +83,6 @@ RUN cd /srv && \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
-    --with-feature=xls \
     --with-feature=edi \
     --installdeps . && \
   cpanm --quiet --notest Pod::ProjectDocs && \

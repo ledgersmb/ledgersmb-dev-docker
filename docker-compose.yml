@@ -34,7 +34,7 @@ services:
       PSGI_BASE_URL: http://lsmb-${LSMB_DEV_VERSION}-devel:5762
       LSMB_TEST_DB: 1
       LSMB_NEW_DB: lsmbtestdb
-      POD_TESTING: 1
+      COA_TESTING: 1
       REMOTE_SERVER_ADDR: selenium
       PGHOST: postgres
       PGUSER: postgres
