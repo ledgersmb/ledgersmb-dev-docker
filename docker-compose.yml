@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
       - selenium
-    image: ledgersmb/ledgersmb-dev-lsmb
+    image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
     container_name: lsmb-${LSMB_DEV_VERSION}-devel
     links:
       - "db:postgres"
