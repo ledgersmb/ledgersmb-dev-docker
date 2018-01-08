@@ -14,8 +14,8 @@ It will create a directory ledgersmb-dev-perl-[perl version] containing
 the docker image build context (Dockerfile, README.md, start.sh and
 associated files).
 
-It is assumed that a file ./tools/ledgersmb is available containing the
-official ledgersmb-dev-lsmb build context on which the newly created
+It is assumed that a directory ./tools/ledgersmb is available containing
+the official ledgersmb-dev-lsmb build context on which the newly created
 context will be based.
 
 END_OF_USAGE
