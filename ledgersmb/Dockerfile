@@ -71,6 +71,7 @@ RUN cd /srv && \
   cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
+    --with-feature=latex-pdf-images \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
     --with-feature=xls \
@@ -82,7 +83,6 @@ RUN cd /srv && \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
     --with-feature=openoffice \
-    --with-feature=xls \
     --with-feature=edi \
     --installdeps . && \
   cpanm --quiet --notest Pod::ProjectDocs && \
