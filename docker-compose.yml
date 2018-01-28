@@ -2,7 +2,7 @@ version: "3.2"
 services:
   db:
     image: ledgersmb/ledgersmb-dev-postgres
-    container_name: postgres-lsmb-${LSMB_DEV_VERSION}-devel
+#    container_name: postgres-lsmb-devel
     environment:
       POSTGRES_PASSWORD: abc
       PGDATA: /var/lib/postgresql/data/pgdata
@@ -10,7 +10,7 @@ services:
       - "dbdata:/var/lib/postgresql/data"
   selenium:
     image: wernight/phantomjs:2.1.1
-    container_name: selenium-${LSMB_DEV_VERSION}-devel
+#    container_name: selenium-devel
     command: phantomjs --webdriver=4422
     stop_signal: SIGKILL
     expose:
@@ -22,7 +22,7 @@ services:
       - db
       - selenium
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
-    container_name: lsmb-${LSMB_DEV_VERSION}-devel
+#    container_name: lsmb-devel
     links:
       - "db:postgres"
     volumes:
@@ -30,8 +30,8 @@ services:
         target: /srv/ledgersmb
         source: ${PWD}
     environment:
-      LSMB_BASE_URL: http://lsmb-${LSMB_DEV_VERSION}-devel:5762
-      PSGI_BASE_URL: http://lsmb-${LSMB_DEV_VERSION}-devel:5762
+      LSMB_BASE_URL: http://lsmb-devel:5762
+      PSGI_BASE_URL: http://lsmb-devel:5762
       LSMB_TEST_DB: 1
       LSMB_NEW_DB: lsmbtestdb
       COA_TESTING: 1
