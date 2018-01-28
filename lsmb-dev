@@ -3,4 +3,10 @@
 export COMPOSE_PROJECT_NAME=ld$1
 shift
 
-docker-compose -f "$(dirname $(readlink -f $0))/docker-compose.yml" "$@"
+if [[ -r docker-compose-local.yml ]]; then
+    F="$(dirname $(readlink -f $0))/docker-compose-local.yml"
+else
+    F="$(dirname $(readlink -f $0))/docker-compose.yml"
+fi
+
+docker-compose -f "$F" "$@"
