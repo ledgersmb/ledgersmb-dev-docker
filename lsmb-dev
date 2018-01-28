@@ -3,10 +3,96 @@
 export COMPOSE_PROJECT_NAME=ld$1
 shift
 
-if [[ -r docker-compose-local.yml ]]; then
+# define a log output function
+show_logs() { # shows the last 5 minutes of logs for the lsmb container
+    cat <<-EOF
+	
+	======================================
+	
+	EOF
+
+    sleep 5; # need a little time for the logs to get updated unfortunately
+    docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb_1";
+
+    cat <<-EOF
+	
+	======================================
+	
+	EOF
+
+}
+
+is_container_running() {
+    local z;
+    z=`docker ps --filter "status=running" --filter="name=ldtest_lsmb_1" --quiet`;
+    test -n "$z";
+}
+
+show_result() {
+    if is_container_running; then
+        cat <<-EOF
+	
+	======================================
+	== LedgerSMB '$CurrentBranch'
+	== should be available at
+	======================================
+	http://${IpAddr}:5762
+	======================================
+	
+	EOF
+        return 0
+    else
+        show_logs
+        return 9
+    fi
+}
+
+# Check we are actually in a LedgerSMB repo
+DirName=`git rev-parse --show-toplevel`; # retrieve the git toplevel dir
+CurrentBranch=`git rev-parse --abbrev-ref HEAD`
+if ! test -r "${DirName}/lib/LedgerSMB.pm"; then
+    cat <<-EOF
+	========================================
+	== ERROR  ERROR  ERROR  ERROR  ERROR  ==
+	========================================
+	== You don't appear to be running me  ==
+	== from a valid LedgerSMB repository  ==
+	========================================
+	
+	EOF
+    exit 9
+fi
+
+# Check for a local (non repo) version of the yml file
+if test -r docker-compose-local.yml; then
     F="$(dirname $(readlink -f $0))/docker-compose-local.yml"
 else
     F="$(dirname $(readlink -f $0))/docker-compose.yml"
 fi
 
+if is_container_running; then
+    cat <<-EOF
+	    ================================
+	    == container ${COMPOSE_PROJECT_NAME}_lsmb_1 is already running
+	    ================================
+	
+	EOF
+    read -p 'q to quit. any other key to restart the container: ' k;
+    if test "${k:-r}" = "q"; then
+        printf "\nExiting.................\n"
+        exit 1
+    else
+        printf "\nRestarting container: "
+        docker restart "${COMPOSE_PROJECT_NAME}_lsmb_1"
+        show_result
+        exit $?
+    fi
+fi
+
+# generate and start the containers
 docker-compose -f "$F" "$@"
+
+# report the IP address in the form of a URL
+IpAddr=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "${COMPOSE_PROJECT_NAME}_lsmb_1"`
+
+show_result
