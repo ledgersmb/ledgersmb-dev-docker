@@ -28,3 +28,20 @@ is the path of the `docker-compose.yml` held in this repository. Three
 containers are created: `postres-lsmb-master-devel`, `ledgersmb-master-devel`
 and `selenium-lsmb-master-devel`.
 
+# Development and testing against different perl versions
+
+A script is provided to help create docker images using different Perl
+versions. These are based on the
+[official Perl docker images](https://hub.docker.com/_/perl/) and are not
+optimised for size, but can be useful for testing version-specific
+behaviour.
+
+Running:
+
+```sh
+   $ ./tools/make_perl_context [perl version]
+```
+
+Will create a new docker context for the specified perl version, from
+which an image can be built and used in place of the oficial
+`ledgersmb/ledgersmb-dev-lsmb` image.
