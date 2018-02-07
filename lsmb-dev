@@ -24,7 +24,7 @@ show_logs() { # shows the last 5 minutes of logs for the lsmb container
 
 is_container_running() {
     local z;
-    z=`docker ps --filter "status=running" --filter="name=ldtest_lsmb_1" --quiet`;
+    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb_1" --quiet`;
     test -n "$z";
 }
 
