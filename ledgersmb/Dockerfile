@@ -50,8 +50,8 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
-    libmodule-install-perl python-setuptools && \
-  python-pip python-urllib3 python-six && \
+    libmodule-install-perl python-setuptools \
+    python-pip python-urllib3 python-six && \
   pip install transifex-client && \
   npm install -g uglify-js@">=2.0 <3.0" && \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
