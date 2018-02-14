@@ -13,7 +13,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
        >> /etc/apt/apt.conf && \
   DEBIAN_FRONTEND=noninteractive apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates \
-                                            gnupg2 && \
+                                      wget gnupg2 && \
   curl -L https://deb.nodesource.com/setup_6.x -o ./setup && \
   bash ./setup && rm ./setup && \
   DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -50,10 +50,14 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
-    libmodule-install-perl python-setuptools \
+    libmodule-install-perl python-setuptools && \
   python-pip python-urllib3 python-six && \
   pip install transifex-client && \
-  npm install -g uglify-js@">=2.0 <3.0"
+  npm install -g uglify-js@">=2.0 <3.0" && \
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+  (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y install postgresql-client
 
 # 1.5 additional dependency install:
 #    JRE is for running the dojo build process using ClosureCompiler
