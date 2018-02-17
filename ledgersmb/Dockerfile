@@ -38,7 +38,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libnamespace-autoclean-perl libdata-uuid-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
-    texlive-latex-recommended liberation-fonts2 \
+    texlive-latex-recommended fonts-liberation2 \
     libx12-parser-perl \
     texlive-xetex \
     starman \
