@@ -4,8 +4,10 @@ Provides `docker-compose` infrastructure to kick off a local development
 and test environment for LedgerSMB.
 
 The infrastructure is based on the `ledgersmb/ledgersmb-dev-postgres` and
-`ledgersmb/ledgersmb-dev-lsmb` LedgerSMB containers and the `wernight/phantomjs`
-selenium tester container. The postgres container is derived from the standard
+`ledgersmb/ledgersmb-dev-lsmb` LedgerSMB containers, the `wernight/phantomjs`
+selenium tester container and the `mailhog/mailhog` mail testing tool.
+
+The postgres container is derived from the standard
 postgres container, adding the `pgTAP` test infrastructure. The lsmb container
 holds everything required to run and test LedgerSMB. This container currently
 supports versions 1.5 and master.
@@ -45,3 +47,16 @@ Running:
 Will create a new docker context for the specified perl version, from
 which an image can be built and used in place of the oficial
 `ledgersmb/ledgersmb-dev-lsmb` image.
+
+# MailHog
+
+The default configuration, all mail sent from ledgersmb is 'caught' by
+[MailHog](https://github.com/mailhog/MailHog). This allows e-mail
+functionaility to be tested without sending real messages over the
+internet.
+
+MailHog traps all messages, providing a web UI and API to view or retrieve
+them.
+
+The `mailhog/mailhog` container serves the web API on port 8025 and accepts
+SMTP connections on port 1025.
