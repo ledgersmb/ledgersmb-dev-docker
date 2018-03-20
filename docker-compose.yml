@@ -1,5 +1,10 @@
 version: "3.2"
 services:
+  mailhog:
+    image: mailhog/mailhog
+    expose:
+      - 1025
+      - 8025
   db:
     image: ledgersmb/ledgersmb-dev-postgres
 #    container_name: postgres-lsmb-devel
@@ -21,6 +26,7 @@ services:
     depends_on:
       - db
       - selenium
+      - mailhog
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
 #    container_name: lsmb-devel
     links:
