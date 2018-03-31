@@ -22,13 +22,17 @@ a LedgerSMB Git repository to exist in the current directory.
 By running:
 
 ```sh
-   $ LSMB_DEV_VERSION=master docker-compose -f <path> up -d
+   $ docker-compose -f <path> up -d
 ```
 
 an execution environment is wrapped around the local repository. `<path>`
-is the path of the `docker-compose.yml` held in this repository. Three
-containers are created: `postres-lsmb-master-devel`, `ledgersmb-master-devel`
-and `selenium-lsmb-master-devel`.
+is the path of the `docker-compose.yml` held in this repository. Four
+containers are created:
+
+* `ledgersmbdevdocker_db_1`,
+* `ledgersmbdevdocker_lsmb_1`
+* `ledgersmbdevdocker_selenium_1`
+* `ledgersmbdevdocker_mailhog_1`
 
 # Development and testing against different perl versions
 
