@@ -65,7 +65,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
       libcgi-simple-perl libhttp-exception-perl default-jre-headless
 
 # Build time variables
-ENV NODE_PATH /usr/local/lib/node_modules
+ENV NODE_PATH /usr/lib/node_modules
 ARG CACHEBUST
 
 # Install LedgerSMB
