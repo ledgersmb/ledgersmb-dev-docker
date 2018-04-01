@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export COMPOSE_PROJECT_NAME=ld_$1
+export COMPOSE_PROJECT_NAME=ld$1
 shift
 
 # define a log output function
