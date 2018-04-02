@@ -16,12 +16,11 @@ if [[ ! -f ledgersmb.conf ]]; then
     /srv/ledgersmb/ledgersmb.conf
 fi
 
-# Currently unmaintained/untested
-# if [ ! -z ${CREATE_DATABASE+x} ]; then
-#   perl tools/dbsetup.pl --company $CREATE_DATABASE \
-#   --host $POSTGRES_HOST \
-#   --postgres_password "$POSTGRES_PASS"
-#fi
+if [[ -e bin/ledgersmb-server.psgi ]]; then
+   psgi_app=bin/ledgersmb-server.psgi
+else
+   psgi_app=tools/starman.psgi
+fi
 
 # start ledgersmb
-exec starman --port 5762 --preload-app tools/starman.psgi
+exec starman --port 5762 --preload-app $psgi_app
