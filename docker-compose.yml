@@ -36,8 +36,8 @@ services:
         target: /srv/ledgersmb
         source: ${PWD}
     environment:
-      LSMB_BASE_URL: http://lsmb-devel:5762
-      PSGI_BASE_URL: http://lsmb-devel:5762
+      LSMB_BASE_URL: http://ledgersmbdevdocker_lsmb_1:5762
+      PSGI_BASE_URL: http://ledgersmbdevdocker_lsmb_1:5762
       LSMB_TEST_DB: 1
       LSMB_NEW_DB: lsmbtestdb
       COA_TESTING: 1
