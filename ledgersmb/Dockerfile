@@ -90,6 +90,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   cpanm --quiet --notest Pod::ProjectDocs && \
+  cpanm --quiet --notest DBD::Mock && \
   rm -rf ~/.cpanm && \
   cd .. && rm -rf ledgersmb && mkdir ledgersmb
 
