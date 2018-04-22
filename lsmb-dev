@@ -81,11 +81,6 @@ if is_container_running; then
     if test "${k:-r}" = "q"; then
         printf "\nExiting.................\n"
         exit 1
-    else
-        printf "\nRestarting container: "
-        docker restart "${COMPOSE_PROJECT_NAME}_lsmb_1"
-        show_result
-        exit $?
     fi
 fi
 
