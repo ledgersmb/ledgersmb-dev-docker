@@ -53,6 +53,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libmodule-install-perl python-setuptools \
     python-pip python-urllib3 python-six && \
   pip install transifex-client && \
+  pip install --upgrade urllib3 && \
   npm install -g uglify-js@">=2.0 <3.0" && \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
