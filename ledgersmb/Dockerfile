@@ -90,6 +90,14 @@ RUN cd /srv && \
     --with-feature=openoffice \
     --with-feature=edi \
     --installdeps . && \
+  git checkout -b 1.6 origin/1.6 && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --with-feature=edi \
+    --installdeps . && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
   rm -rf ~/.cpanm && \
