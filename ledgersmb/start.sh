@@ -23,4 +23,4 @@ else
 fi
 
 # start ledgersmb
-exec plackup --port 5762 --preload-app $psgi_app
+exec plackup --port 5762 $psgi_app
