@@ -98,6 +98,7 @@ RUN cd /srv && \
     --with-feature=openoffice \
     --with-feature=edi \
     --installdeps . && \
+  cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
   rm -rf ~/.cpanm && \
