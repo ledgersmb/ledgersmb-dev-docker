@@ -20,7 +20,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
     libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libdbd-pg-perl libdbi-perl libdatetime-perl \
-    libspreadsheet-writeexcel-perl \
+    libspreadsheet-writeexcel-perl libfile-find-rule-perl \
     libdatetime-format-strptime-perl libfile-mimeinfo-perl \
     libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
     libcpanel-json-xs-perl liblist-moreutils-perl \
