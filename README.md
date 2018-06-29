@@ -10,7 +10,8 @@ selenium tester container and the `mailhog/mailhog` mail testing tool.
 The postgres container is derived from the standard
 postgres container, adding the `pgTAP` test infrastructure. The lsmb container
 holds everything required to run and test LedgerSMB. This container currently
-supports versions 1.5 and master.
+supports versions 1.5, 1.6 and master -- the image gets updated regularly
+to include dependencies for specific feature branches.
 
 # Prerequisites
 
