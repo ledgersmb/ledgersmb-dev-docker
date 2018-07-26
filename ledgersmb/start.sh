@@ -17,10 +17,10 @@ if [[ ! -f ledgersmb.conf ]]; then
 fi
 
 if [[ -e bin/ledgersmb-server.psgi ]]; then
-   psgi_app=bin/ledgersmb-server.psgi
+   psgi_app=/srv/ledgersmb/bin/ledgersmb-server.psgi
 else
-   psgi_app=tools/starman.psgi
+   psgi_app=/srv/ledgersmb/tools/starman.psgi
 fi
 
 # start ledgersmb
-exec plackup --port 5762 $psgi_app
+exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib --port 5762 $psgi_app
