@@ -7,7 +7,6 @@ services:
       - 8025
   db:
     image: ledgersmb/ledgersmb-dev-postgres
-#    container_name: postgres-lsmb-devel
     environment:
       POSTGRES_PASSWORD: abc
       PGDATA: /var/lib/postgresql/data/pgdata
@@ -34,7 +33,7 @@ services:
         target: /srv/ledgersmb
         source: ${PWD}
     environment:
-      LSMB_BASE_URL: http://lsmb:5762
+      LSMB_BASE_URL: http://proxy:80
       PSGI_BASE_URL: http://lsmb:5762
       LSMB_TEST_DB: 1
       LSMB_NEW_DB: lsmbtestdb
@@ -43,6 +42,16 @@ services:
       PGHOST: postgres
       PGUSER: postgres
       PGPASSWORD: abc
+  proxy:
+    image: ledgersmb/ledgersmb-dev-nginx
+    expose:
+      - 80
+    depends_on:
+      - lsmb
+    volumes:
+      - type: bind
+        target: /srv/ledgersmb
+        source: ${PWD}
 
 
 volumes:
