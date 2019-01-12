@@ -42,6 +42,8 @@ services:
       PGHOST: postgres
       PGUSER: postgres
       PGPASSWORD: abc
+      SSMTP_HOSTNAME: mailhog
+      SSMTP_MAILHUB: mailhog:1025
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
     expose:
