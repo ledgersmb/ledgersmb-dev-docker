@@ -101,6 +101,7 @@ RUN cd /srv && \
   cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
+  cpanm --quiet --notest git://github.com/pjlsergeant/test-bdd-cucumber-perl.git@match-mode && \
   rm -rf ~/.cpanm && \
   cd .. && rm -rf ledgersmb && mkdir ledgersmb
 
