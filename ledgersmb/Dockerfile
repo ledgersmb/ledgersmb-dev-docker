@@ -50,7 +50,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
-    libmodule-install-perl python-setuptools \
+    libmodule-install-perl python-setuptools libdist-zilla-perl \
     python-pip python-urllib3 python-six && \
   pip install transifex-client && \
   pip install --upgrade urllib3 && \
@@ -101,9 +101,10 @@ RUN cd /srv && \
   cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
-  cpanm --quiet --notest git://github.com/pjlsergeant/test-bdd-cucumber-perl.git@match-mode && \
+  cd /tmp && git clone git://github.com/pjlsergeant/test-bdd-cucumber-perl.git -b match-mode && \
+  cd test-bdd-cucumber-perl && ( dzil authordeps --missing | cpanm --notest ) && ( dzil listdeps --missing --author | cpanm --notest ) && \
   rm -rf ~/.cpanm && \
-  cd .. && rm -rf ledgersmb && mkdir ledgersmb
+  cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
 
