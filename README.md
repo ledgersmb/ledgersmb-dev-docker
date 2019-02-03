@@ -53,6 +53,15 @@ Will create a new docker context for the specified perl version, from
 which an image can be built and used in place of the oficial
 `ledgersmb/ledgersmb-dev-lsmb` image.
 
+# DB (PostgreSQL)
+
+Please note that the database container patches the PostgreSQL configuration
+for faster test performance rather than the reliability levels you'd want
+for your production environment (that is, data consistency isn't fully
+guaranteed on outage, which shouldn't be a problem for tests -- we'll simply
+re-run them -- but isn't a risk to be taken in production).
+
+
 # MailHog
 
 The default configuration, all mail sent from ledgersmb is 'caught' by
