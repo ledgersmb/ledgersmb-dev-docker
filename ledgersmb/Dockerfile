@@ -101,6 +101,7 @@ RUN cd /srv && \
   cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
+  cpanm --quiet --notest Devel::Cover && \
   cd /tmp && git clone git://github.com/pjlsergeant/test-bdd-cucumber-perl.git -b match-mode && \
   cd test-bdd-cucumber-perl && ( dzil authordeps --missing | cpanm --notest ) && ( dzil listdeps --missing --author | cpanm --notest ) && \
   dzil install && rm -rf ~/.cpanm && \
