@@ -8,10 +8,13 @@ The infrastructure is based on the `ledgersmb/ledgersmb-dev-postgres` and
 selenium tester container and the `mailhog/mailhog` mail testing tool.
 
 The postgres container is derived from the standard
-postgres container, adding the `pgTAP` test infrastructure. The lsmb container
-holds everything required to run and test LedgerSMB. This container currently
-supports versions 1.5, 1.6 and master -- the image gets updated regularly
-to include dependencies for specific feature branches.
+postgres container, adding the `pgTAP` test infrastructure and setting
+aggressive database performance optimizations to help speed up testing.
+
+The lsmb container holds everything required to run and test LedgerSMB.
+This container currently supports versions 1.5, 1.6 and master -- the
+image gets updated regularly to include dependencies for specific
+feature branches.
 
 # Prerequisites
 
@@ -27,13 +30,14 @@ By running:
 ```
 
 an execution environment is wrapped around the local repository. `<path>`
-is the path of the `docker-compose.yml` held in this repository. Four
+is the path of the `docker-compose.yml` held in this repository. Five
 containers are created:
 
 * `ledgersmbdevdocker_db_1`,
 * `ledgersmbdevdocker_lsmb_1`
 * `ledgersmbdevdocker_selenium_1`
 * `ledgersmbdevdocker_mailhog_1`
+* `ledgersmbdevdocker_proxy_1`
 
 # Development and testing against different perl versions
 
