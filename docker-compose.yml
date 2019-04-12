@@ -11,7 +11,10 @@ services:
       POSTGRES_PASSWORD: abc
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - "dbdata:/var/lib/postgresql/data"
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 1000000000
   selenium:
     image: wernight/phantomjs:2.1.1
     command: phantomjs --webdriver=4422
@@ -33,17 +36,22 @@ services:
         target: /srv/ledgersmb
         source: ${PWD}
     environment:
-      LSMB_BASE_URL: http://proxy:80
-      PSGI_BASE_URL: http://lsmb:5762
-      LSMB_TEST_DB: 1
-      LSMB_NEW_DB: lsmbtestdb
-      COA_TESTING: 1
-      REMOTE_SERVER_ADDR: selenium
-      PGHOST: postgres
-      PGUSER: postgres
-      PGPASSWORD: abc
-      SSMTP_HOSTNAME: mailhog
-      SSMTP_MAILHUB: mailhog:1025
+      - PERL5OPT
+      - HARNESS_PERL_SWITCHES
+      - RELEASE_TESTING=1
+      - HARNESS_RULESFILE="t/testrules.yml"
+      - DEVEL_COVER_OPTIONS
+      - LSMB_BASE_URL=http://proxy:80
+      - PSGI_BASE_URL=http://lsmb:5762
+      - LSMB_TEST_DB=1
+      - LSMB_NEW_DB=lsmbtestdb
+      - COA_TESTING=1
+      - REMOTE_SERVER_ADDR=selenium
+      - PGHOST=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=abc
+      - SSMTP_HOSTNAME=mailhog
+      - SSMTP_MAILHUB=mailhog:1025
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
     expose:
