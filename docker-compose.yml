@@ -11,10 +11,10 @@ services:
       POSTGRES_PASSWORD: abc
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - type: tmpfs
-        target: /var/lib/postgresql/data
-        tmpfs:
-          size: 1000000000
+      - target: /var/lib/postgresql/data
+#      - type: tmpfs
+#        tmpfs:
+#          size: 1000000000
   selenium:
     image: wernight/phantomjs:2.1.1
     command: phantomjs --webdriver=4422
