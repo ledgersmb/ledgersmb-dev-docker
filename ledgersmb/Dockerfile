@@ -102,6 +102,7 @@ RUN cd /srv && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
   cpanm --quiet --notest Devel::Cover && \
+  cpanm --quiet --notest Devel::Cover::Report::Coveralls && \
   cd /tmp && git clone git://github.com/pjlsergeant/test-bdd-cucumber-perl.git -b match-mode && \
   cd test-bdd-cucumber-perl && ( dzil authordeps --missing | cpanm --notest ) && ( dzil listdeps --missing --author | cpanm --notest ) && \
   dzil install && rm -rf ~/.cpanm && \
