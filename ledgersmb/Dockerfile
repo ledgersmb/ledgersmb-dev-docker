@@ -46,6 +46,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     postgresql-client \
     ssmtp \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
+    ssh tar gzip \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
