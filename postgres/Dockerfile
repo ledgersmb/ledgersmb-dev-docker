@@ -1,8 +1,8 @@
-FROM        postgres:10
+FROM        postgres:12
 MAINTAINER  LedgerSMB  devel@lists.ledgersmb.org
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-    apt-get -y install postgresql-10-pgtap && \
+    apt-get -y install postgresql-12-pgtap && \
     apt-get -y autoremove && \
     apt-get -y autoclean && \
     rm -rf /var/lib/apt/lists/* && \
