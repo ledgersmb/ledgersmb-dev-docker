@@ -25,7 +25,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
     libcpanel-json-xs-perl liblist-moreutils-perl \
     liblocale-maketext-perl liblocale-maketext-lexicon-perl \
-    liblog-log4perl-perl libwww-perl libmime-lite-perl \
+    liblog-log4perl-perl libwww-perl \
     libmodule-runtime-perl libmath-bigint-gmp-perl libmoose-perl \
     libmoosex-nonmoose-perl libnumber-format-perl \
     libole-storage-lite-perl libparse-recdescent-perl \
@@ -39,7 +39,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended fonts-liberation2 \
-    libx12-parser-perl \
+    libx12-parser-perl libemail-sender-perl libauthen-sasl-perl \
     texlive-xetex \
     starman \
     libxml-twig-perl libopenoffice-oodoc-perl \
@@ -61,10 +61,8 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y install postgresql-client
 
-# 1.5 additional dependency install:
-#    JRE is for running the dojo build process using ClosureCompiler
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
-      libcgi-simple-perl libhttp-exception-perl default-jre-headless
+# Additional dependency up to and including 1.7
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
 
 # Build time variables
 ENV NODE_PATH /usr/lib/node_modules
