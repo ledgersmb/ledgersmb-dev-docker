@@ -35,11 +35,12 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libplack-perl libplack-middleware-reverseproxy-perl \
     libspreadsheet-writeexcel-perl libtemplate-perl \
     libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
-    libnamespace-autoclean-perl libdata-uuid-perl \
+    libnamespace-autoclean-perl libdata-uuid-perl libstring-random-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
     libmoosex-nonmoose-perl libclass-c3-xs-perl \
     texlive-latex-recommended fonts-liberation2 \
     libx12-parser-perl libemail-sender-perl libauthen-sasl-perl \
+    libcookie-baker-perl libemail-stuffer-perl libsession-storage-secure-perl \
     texlive-xetex \
     starman \
     libxml-twig-perl libopenoffice-oodoc-perl \
