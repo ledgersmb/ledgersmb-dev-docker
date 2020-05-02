@@ -98,6 +98,14 @@ RUN cd /srv && \
     --with-feature=openoffice \
     --with-feature=edi \
     --installdeps . && \
+  git checkout -b 1.7 origin/1.7 && \
+  cpanm --quiet --notest \
+    --with-develop \
+    --with-feature=starman \
+    --with-feature=latex-pdf-ps \
+    --with-feature=openoffice \
+    --with-feature=edi \
+    --installdeps . && \
   cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
