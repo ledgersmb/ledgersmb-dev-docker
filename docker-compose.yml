@@ -11,10 +11,7 @@ services:
       POSTGRES_PASSWORD: abc
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - target: /var/lib/postgresql/data
-        type: tmpfs
-#        tmpfs:
-#          size: 1000000000
+      - dbdata:/var/lib/postgresql/data
   selenium:
     image: wernight/phantomjs:2.1.1
     command: phantomjs --webdriver=4422
@@ -34,8 +31,10 @@ services:
     volumes:
       - type: bind
         target: /srv/ledgersmb
+#        target: /home/circleci
         source: ${PWD}
     environment:
+      - PLACK_SERVER=HTTP::Server::Simple
       - PERL5OPT
       - HARNESS_PERL_SWITCHES
       - RELEASE_TESTING=1
@@ -60,10 +59,14 @@ services:
       - lsmb
     volumes:
       - type: bind
+#        target: /home/circleci
         target: /srv/ledgersmb
         source: ${PWD}
 
 
 volumes:
   dbdata:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
 
