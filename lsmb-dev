@@ -24,7 +24,7 @@ show_logs() { # shows the last 5 minutes of logs for the lsmb container
 
 is_container_running() {
     local z;
-    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb_1" --quiet`;
+    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb_1" --quiet 2>/dev/null`;
     test -n "$z";
 }
 
@@ -68,20 +68,6 @@ if test -r docker-compose-local.yml; then
     F="$(dirname $(readlink -f $0))/docker-compose-local.yml"
 else
     F="$(dirname $(readlink -f $0))/docker-compose.yml"
-fi
-
-if is_container_running; then
-    cat <<-EOF
-	    ================================
-	    == container ${COMPOSE_PROJECT_NAME}_lsmb_1 is already running
-	    ================================
-	
-	EOF
-    read -p 'q to quit. any other key to restart the container: ' k;
-    if test "${k:-r}" = "q"; then
-        printf "\nExiting.................\n"
-        exit 1
-    fi
 fi
 
 # generate and start the containers
