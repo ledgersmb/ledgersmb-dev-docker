@@ -72,6 +72,8 @@ ARG CACHEBUST
 # Install LedgerSMB
 RUN cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
+  git remote add yla https://github.com/ylavoie/LedgerSMB.git && \
+  git remote update && \
   cd ledgersmb && \
   cpanm --quiet --notest \
     --with-develop \
@@ -112,6 +114,10 @@ RUN cd /srv && \
   cpanm --quiet --notest Devel::Cover && \
   cpanm --quiet --notest Devel::Cover::Report::Coveralls && \
   rm -rf ~/.cpanm && \
+  git checkout yla/webpack && \
+  npm --loglevel=error install --save-dev webpack webpack-cli && \
+  npm install && \
+  npm dedupe && \
   cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
