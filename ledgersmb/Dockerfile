@@ -72,9 +72,9 @@ ARG CACHEBUST
 # Install LedgerSMB
 RUN cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
+  cd ledgersmb && \
   git remote add yla https://github.com/ylavoie/LedgerSMB.git && \
   git remote update && \
-  cd ledgersmb && \
   cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
