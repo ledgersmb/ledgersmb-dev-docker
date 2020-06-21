@@ -1,4 +1,4 @@
-FROM        debian:stretch
+FROM        debian:buster
 MAINTAINER  Freelock john@freelock.com
 
 
@@ -11,41 +11,45 @@ MAINTAINER  Freelock john@freelock.com
 
 RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
        >> /etc/apt/apt.conf && \
-  DEBIAN_FRONTEND=noninteractive apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get -y install curl ca-certificates \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
                                       wget gnupg2 && \
   curl -L https://deb.nodesource.com/setup_12.x -o ./setup && \
   bash ./setup && rm ./setup && \
-  DEBIAN_FRONTEND=noninteractive apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    libcgi-emulate-psgi-perl libconfig-inifiles-perl \
-    libdbd-pg-perl libdbi-perl libdatetime-perl \
-    libspreadsheet-writeexcel-perl libfile-find-rule-perl \
-    libdatetime-format-strptime-perl libfile-mimeinfo-perl \
-    libhtml-parser-perl libio-stringy-perl libjson-maybexs-perl \
-    libcpanel-json-xs-perl liblist-moreutils-perl \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y upgrade && \
+  DEBIAN_FRONTEND="noninteractive" apt-get -y install \
+    gnupg \
+    libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
+    libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
+    libdatetime-perl libdatetime-format-strptime-perl \
+    libemail-sender-perl libemail-stuffer-perl libfile-find-rule-perl \
+    libhtml-escape-perl libhttp-headers-fast-perl libio-stringy-perl \
+    libjson-maybexs-perl libcpanel-json-xs-perl libjson-pp-perl \
+    liblist-moreutils-perl \
     liblocale-maketext-perl liblocale-maketext-lexicon-perl \
-    liblog-log4perl-perl libwww-perl \
-    libmodule-runtime-perl libmath-bigint-gmp-perl libmoose-perl \
+    liblog-log4perl-perl libmime-types-perl \
+    libmath-bigint-gmp-perl libmodule-runtime-perl libmoo-perl \
+    libmoox-types-mooselike-perl libmoose-perl \
     libmoosex-nonmoose-perl libnumber-format-perl \
-    libole-storage-lite-perl libparse-recdescent-perl \
     libpgobject-perl libpgobject-simple-perl libpgobject-simple-role-perl \
-    libpgobject-type-bigfloat-perl libpgobject-type-bytestring-perl \
-    libpgobject-type-datetime-perl libpgobject-util-dbmethod-perl \
-    libplack-perl libplack-middleware-reverseproxy-perl \
-    libspreadsheet-writeexcel-perl libtemplate-perl \
-    libtry-tiny-perl libtext-csv-perl libtext-csv-xs-perl libxml-simple-perl \
-    libnamespace-autoclean-perl libdata-uuid-perl libstring-random-perl \
+    libpgobject-type-bigfloat-perl libpgobject-type-datetime-perl \
+    libpgobject-type-bytestring-perl libpgobject-util-dbmethod-perl \
+    libpgobject-util-dbadmin-perl libplack-perl \
+    libplack-builder-conditionals-perl libplack-middleware-reverseproxy-perl \
+    libplack-request-withencoding-perl libscope-guard-perl \
+    libsession-storage-secure-perl libstring-random-perl \
+    libtemplate-perl libtext-csv-perl libtext-csv-xs-perl \
+    libtext-markdown-perl libtry-tiny-perl libversion-compare-perl \
+    libxml-simple-perl libnamespace-autoclean-perl \
+    starman starlet libhttp-parser-xs-perl \
     libtemplate-plugin-latex-perl libtex-encode-perl \
-    libmoosex-nonmoose-perl libclass-c3-xs-perl \
-    texlive-latex-recommended fonts-liberation2 \
-    libx12-parser-perl libemail-sender-perl libauthen-sasl-perl \
-    libcookie-baker-perl libemail-stuffer-perl libsession-storage-secure-perl \
-    texlive-xetex \
-    starman \
     libxml-twig-perl libopenoffice-oodoc-perl \
-    postgresql-client \
-    ssmtp \
+    libexcel-writer-xlsx-perl libspreadsheet-writeexcel-perl \
+    libclass-c3-xs-perl \
+    texlive-latex-recommended \
+    texlive-xetex fonts-liberation \
+    lsb-release \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
     ssh tar gzip \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
@@ -73,7 +77,6 @@ ARG CACHEBUST
 RUN cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
-  git remote add yla https://github.com/ylavoie/LedgerSMB.git && \
   git remote update && \
   cpanm --quiet --notest \
     --with-develop \
@@ -84,6 +87,7 @@ RUN cd /srv && \
     --with-feature=xls \
     --with-feature=edi \
     --installdeps . && \
+  make dojo && \
   git checkout -b 1.5 origin/1.5 && \
   cpanm --quiet --notest \
     --with-develop \
@@ -114,10 +118,6 @@ RUN cd /srv && \
   cpanm --quiet --notest Devel::Cover && \
   cpanm --quiet --notest Devel::Cover::Report::Coveralls && \
   rm -rf ~/.cpanm && \
-  git checkout yla/webpack && \
-  npm --loglevel=error install --save-dev webpack webpack-cli && \
-  npm install && \
-  npm dedupe && \
   cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
@@ -137,11 +137,10 @@ ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
 
 COPY start.sh /usr/local/bin/start.sh
-COPY update_ssmtp.sh /usr/local/bin/update_ssmtp.sh
 
-RUN chown www-data /etc/ssmtp /etc/ssmtp/ssmtp.conf && \
-  chmod +x /usr/local/bin/update_ssmtp.sh /usr/local/bin/start.sh && \
-  mkdir -p /var/www && chown www-data /var/www
+RUN chmod +x /usr/local/bin/start.sh && \
+    mkdir -p /var/www && \
+    chown www-data /var/www
 
 # Work around an aufs bug related to directory permissions:
 RUN mkdir -p /tmp && \

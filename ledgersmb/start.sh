@@ -1,6 +1,5 @@
 #!/bin/bash
 
-update_ssmtp.sh
 cd /srv/ledgersmb
 
 if [[ ! -f ledgersmb.conf ]]; then
