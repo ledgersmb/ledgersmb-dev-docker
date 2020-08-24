@@ -47,7 +47,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libxml-twig-perl libopenoffice-oodoc-perl \
     libexcel-writer-xlsx-perl libspreadsheet-writeexcel-perl \
     libclass-c3-xs-perl liblocale-codes-perl \
-    texlive-latex-recommended \
+    texlive-latex-recommended texlive-fonts-recommended \
     texlive-xetex fonts-liberation \
     lsb-release \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
