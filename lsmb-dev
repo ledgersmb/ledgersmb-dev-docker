@@ -74,6 +74,6 @@ fi
 docker-compose -f "$F" "$@"
 
 # report the IP address in the form of a URL
-IpAddr=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "${COMPOSE_PROJECT_NAME}_lsmb_1"`
+IpAddr=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "${COMPOSE_PROJECT_NAME}_proxy_1"`
 
 show_result
