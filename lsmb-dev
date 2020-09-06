@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# set -x
+
 export COMPOSE_PROJECT_NAME=ld$1
 shift
 
@@ -81,4 +83,20 @@ if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   IpAddr=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "${COMPOSE_PROJECT_NAME}_proxy_1"`
 
   show_result
+fi
+
+if ! test -e Makefile.local ; then
+    cat >Makefile.local <<-EOF
+	CONTAINER=${COMPOSE_PROJECT_NAME}_lsmb_1
+	#PHERKIN_EXTRA_OPTS=--theme=light
+	#DOCKER_CMD=
+	#PHERKIN_OPTS=
+
+	EOF
+
+    echo "Created Makefile.local causing e.g. 'make test' to run in the container"
+else
+    if test -z "`grep ${COMPOSE_PROJECT_NAME}_lsmb_1 Makefile.local`" ; then
+        echo "'Makefile.local' missing reference to container '${COMPOSE_PROJECT_NAME}_lsmb_1\nplease update it manually"
+    fi
 fi
