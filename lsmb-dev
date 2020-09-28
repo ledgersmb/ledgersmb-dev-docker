@@ -67,9 +67,9 @@ fi
 
 # Check for a local (non repo) version of the yml file
 if test -r docker-compose-local.yml; then
-    F="$(dirname $(readlink -f $0))/docker-compose-local.yml"
+    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose-local.yml"
 else
-    F="$(dirname $(readlink -f $0))/docker-compose.yml"
+    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose.yml"
 fi
 
 # generate and start the containers
