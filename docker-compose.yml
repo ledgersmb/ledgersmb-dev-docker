@@ -53,8 +53,8 @@ services:
       - SSMTP_MAILHUB=mailhog:1025
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
-    expose:
-      - 80
+    ports:
+      - 80:80
     depends_on:
       - lsmb
     volumes:
