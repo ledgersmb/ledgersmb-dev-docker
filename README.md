@@ -3,59 +3,131 @@
 Provides `docker-compose` infrastructure to kick off a local development
 and test environment for LedgerSMB.
 
-The infrastructure is based on the `ledgersmb/ledgersmb-dev-postgres` and
-`ledgersmb/ledgersmb-dev-lsmb` LedgerSMB containers, the `wernight/phantomjs`
+The infrastructure is based on the `ledgersmb/ledgersmb-dev-postgres`,
+`ledgersmb/ledgersmb-dev-nginx` and `ledgersmb/ledgersmb-dev-lsmb`
+LedgerSMB containers, the `wernight/phantomjs`
 selenium tester container and the `mailhog/mailhog` mail testing tool.
 
-The postgres container is derived from the standard
+The ledgersmb-dev-postgres container is derived from the standard
 postgres container, adding the `pgTAP` test infrastructure and setting
 aggressive database performance optimizations to help speed up testing.
 
-The lsmb container holds everything required to run and test LedgerSMB.
-This container currently supports versions 1.5, 1.6 and master -- the
-image gets updated regularly to include dependencies for specific
-feature branches.
+The ledgersmb-dev-lsmb container holds everything required to run and
+test LedgerSMB. This container currently supports versions 1.5, 1.6, 1.7,
+1.8 and master -- the image gets updated regularly to include dependencies
+for specific feature branches.
 
 # Prerequisites
 
 Apart from the obvious (docker, docker-compose), this project expects
 a LedgerSMB Git repository to exist in the current directory.
 
-# Getting started
-
-By running:
+# Getting started (from scratch)
 
 ```sh
-   $ docker-compose -f <path> up -d
+$ git clone https://github.com/ledgersmb/LedgerSMB.git
+$ git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
+$ cd LedgerSMB
+$ ../ldd/lsmb-dev master pull
+$ ../ldd/lsmb-dev master up -d
+======================================
+== LedgerSMB 'master'
+== should be available at
+======================================
+http://172.20.0.6
+======================================
 ```
 
-an execution environment is wrapped around the local repository. `<path>`
-is the path of the `docker-compose.yml` held in this repository. Five
-containers are created:
+Five containers are created:
 
-* `ledgersmbdevdocker_db_1`,
-* `ledgersmbdevdocker_lsmb_1`
-* `ledgersmbdevdocker_selenium_1`
-* `ledgersmbdevdocker_mailhog_1`
-* `ledgersmbdevdocker_proxy_1`
+* `ldmaster_db_1`
+* `ldmaster_lsmb_1`
+* `ldmaster_selenium_1`
+* `ldmaster_mailhog_1`
+* `ldmaster_proxy_1`
 
-# Development and testing against different perl versions
+The `LedgerSMB` directory is mapped to the `/srv/ledgersmb` directory
+inside the `ldmaster_lsmb_1` and `ldmaster_proyxy_1` containers. The
+database container creates its database storage on a "RAM drive",
+meaning that restarting the container causes all existing databases
+to be flushed.
 
-A script is provided to help create docker images using different Perl
-versions. These are based on the
-[official Perl docker images](https://hub.docker.com/_/perl/) and are not
-optimised for size, but can be useful for testing version-specific
-behaviour.
+## Accessing LedgerSMB
 
-Running:
+As per the example above, you should be able to browse to
+http://172.20.0.6/setup.pl to create a test database. The password of
+the `postgres` user is `abc`.
+
+Similarly, when a test company exists, browsing to
+http://172.20.0.6/login.pl allows to log into the company.
+
+## Running tests
+
+Three commands exist to run tests:
+
+* `make test`  
+   Runs the tests in the `t/` directory
+* `make devtest`  
+   Runs the tests in the `t/` and `xt/` directories
+* `make pherkin`  
+  Runs the tests `xt/**/*.feature`
+  
+The set of tests to be run can be restricted using the `TESTS` Makefile
+variable:
+
+```bash
+$ make test TESTS=t/01-load.t
+```
+
+The combination of the `lsmb-dev` command and the use of `make` takes care
+of making sure the tests are being run inside the `ldmaster_lsmb_1` docker
+container.
+
+## Retaining databases between container restarts
+
+The database gets stored in RAM for performance reasons. If however,
+you want/need to retain databases between container restarts, you can
+change the backing storage to harddisk/ssd by changing
+
+```yaml
+volumes:
+  dbdata:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+```
+
+to
+
+```yaml
+volumes:
+  dbdata:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
+```
+
+## Multiple parallel test environments
+
+Multiple test environments, based on multiple clones, can be created
+using a different first-argument to the `lsmb-dev` script. E.g. a
+1.8 testing environment can be created using:
 
 ```sh
-   $ ./tools/make_perl_context [perl version]
+$ git clone -b 1.8 https://github.com/ledgersmb/LedgerSMB.git
+$ git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
+$ cd LedgerSMB
+$ ../ldd/lsmb-dev 18 pull
+$ ../ldd/lsmb-dev 18 up -d
 ```
+This creates 5 additional containers:
+* `ld18_db_1`
+* `ld18_lsmb_1`
+* `ld18_selenium_1`
+* `ld18_mailhog_1`
+* `ld18_proxy_1`
 
-Will create a new docker context for the specified perl version, from
-which an image can be built and used in place of the oficial
-`ledgersmb/ledgersmb-dev-lsmb` image.
+
 
 # DB (PostgreSQL)
 
@@ -78,3 +150,23 @@ them.
 
 The `mailhog/mailhog` container serves the web API on port 8025 and accepts
 SMTP connections on port 1025.
+
+
+
+# Development and testing against different perl versions
+
+A script is provided to help create docker images using different Perl
+versions. These are based on the
+[official Perl docker images](https://hub.docker.com/_/perl/) and are not
+optimised for size, but can be useful for testing version-specific
+behaviour.
+
+Running:
+
+```sh
+   $ ./tools/make_perl_context [perl version]
+```
+
+Will create a new docker context for the specified perl version, from
+which an image can be built and used in place of the oficial
+`ledgersmb/ledgersmb-dev-lsmb` image.
