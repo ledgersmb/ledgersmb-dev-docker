@@ -52,6 +52,18 @@ database container creates its database storage on a "RAM drive",
 meaning that restarting the container causes all existing databases
 to be flushed.
 
+## Creating JavaScript output
+
+To use the web-app, a "transpiled" version of the JavaScript code must
+be available in the `UI/js/` directory. This is created from `UI/js-src/`
+by running
+
+```bash
+$ make dojo
+```
+
+After editing the code in `UI/js-src/`, this command needs to be re-run.
+
 ## Accessing LedgerSMB
 
 As per the example above, you should be able to browse to
@@ -82,6 +94,19 @@ $ make test TESTS=t/01-load.t
 The combination of the `lsmb-dev` command and the use of `make` takes care
 of making sure the tests are being run inside the `ldmaster_lsmb_1` docker
 container.
+
+## Restarting LedgerSMB after making (Perl) edits
+
+It's best to restart the single `ldmaster_lsmb_1` container using Docker
+directly by running
+
+```bash
+$ docker restart ldmaster_lsmb_1
+```
+
+Although the command `../ldd/lsmb-dev master restart` works, it usually
+comes up with different IP addresses on the containers than the original
+`up -d` command.
 
 ## Retaining databases between container restarts
 
