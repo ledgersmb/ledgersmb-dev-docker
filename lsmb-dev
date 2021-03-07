@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set -x
 
@@ -73,7 +73,7 @@ else
 fi
 
 # generate and start the containers
-docker-compose -f "$F" "$@"
+USER="$UID:$GID" docker-compose -f "$F" "$@"
 
 if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # don't try to report the ip and url if the command is one of

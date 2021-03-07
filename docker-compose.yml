@@ -25,6 +25,7 @@ services:
       - db
       - selenium
       - mailhog
+    user: "${USER}"
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
     links:
       - "db:postgres"
