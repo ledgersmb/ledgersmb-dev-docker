@@ -69,6 +69,11 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
 # Additional dependency up to and including 1.7
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
 
+RUN git clone https://github.com/cbbrowne/autodoc.git && \
+  cd autodoc && \
+  make install && \
+  cd .. && rm -rf autodoc
+
 # Build time variables
 ENV NODE_PATH /usr/lib/node_modules
 ARG CACHEBUST
