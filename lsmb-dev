@@ -88,7 +88,7 @@ if test "$1" = "up" ; then
 fi
 
 # generate and start the containers
-USER="$UID:$GID" docker-compose \
+USER="$(id -u):$(id -g)" docker-compose \
     -f $_CWD/selenium/docker-compose.yml \
     -f $_CWD/selenium/docker-compose-$BROWSER.yml \
     -f "$F" "$@" $SCALE
