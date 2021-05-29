@@ -66,8 +66,15 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y install postgresql-client
 
+# Including postgresql-autodoc in the above total lump didn't work;
+#   splitting out did...
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql-autodoc graphviz
+
 # Additional dependency up to and including 1.7
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
+
+# we need at least npm 7.x for our code base; Node 12.x comes with npm 6.x...
+RUN npm install -g npm
 
 RUN git clone https://github.com/cbbrowne/autodoc.git && \
   cd autodoc && \
