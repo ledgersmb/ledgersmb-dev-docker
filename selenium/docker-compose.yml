@@ -1,0 +1,19 @@
+version: '3.2'
+
+services:
+
+  selenium:
+    image: selenium/hub
+    container_name: selenium
+    hostname: selenium
+    privileged: true
+    expose:
+      - 4422
+    ports:
+      - "4422:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      - GRID_MAX_SESSION=50
+      - GRID_TIMEOUT=1800
+      - GRID_DEBUG=true

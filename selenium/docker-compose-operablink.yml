@@ -1,0 +1,15 @@
+version: '3.2'
+
+services:
+
+  operablink:
+    image: selenium/node-opera
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium
+    environment:
+      - HUB_HOST=selenium
+      - NODE_MAX_SESSION=5
+      - NODE_MAX_INSTANCES=5
+      - GRID_DEBUG=true

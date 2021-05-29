@@ -5,21 +5,31 @@
 export COMPOSE_PROJECT_NAME=ld$1
 shift
 
+_CWD=$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))
+
+BROWSER=${BROWSER:-chrome}
+BROWSER_COUNT=${BROWSER_COUNT:-5}
+
+if [ ! -f ../ldd/selenium/docker-compose-${BROWSER}.yml ]; then
+  echo "Unconfigured browser $BROWSER. Please define $_CWD/selenium/docker-compose-${BROWSER}.yml"
+  exit
+fi
+
 # define a log output function
 show_logs() { # shows the last 5 minutes of logs for the lsmb container
     cat <<-EOF
-	
+
 	======================================
-	
+
 	EOF
 
     sleep 5; # need a little time for the logs to get updated unfortunately
     docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb_1";
 
     cat <<-EOF
-	
+
 	======================================
-	
+
 	EOF
 
 }
@@ -33,14 +43,14 @@ is_container_running() {
 show_result() {
     if is_container_running; then
         cat <<-EOF
-	
+
 	======================================
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
 	======================================
 	http://${IpAddr}
 	======================================
-	
+
 	EOF
         return 0
     else
@@ -60,20 +70,28 @@ if ! test -r "${DirName}/lib/LedgerSMB.pm"; then
 	== You don't appear to be running me  ==
 	== from a valid LedgerSMB repository  ==
 	========================================
-	
+
 	EOF
     exit 9
 fi
 
 # Check for a local (non repo) version of the yml file
 if test -r docker-compose-local.yml; then
-    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose-local.yml"
+    F="$_CWD/docker-compose-local.yml"
 else
-    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose.yml"
+    F="$_CWD/docker-compose.yml"
+fi
+
+SCALE=""
+if test "$1" = "up" ; then
+    SCALE="--scale $BROWSER=$BROWSER_COUNT"
 fi
 
 # generate and start the containers
-USER="$UID:$GID" docker-compose -f "$F" "$@"
+USER="$UID:$GID" docker-compose \
+    -f $_CWD/selenium/docker-compose.yml \
+    -f $_CWD/selenium/docker-compose-$BROWSER.yml \
+    -f "$F" "$@" $SCALE
 
 if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # don't try to report the ip and url if the command is one of

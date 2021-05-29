@@ -1,10 +1,12 @@
 version: "3.2"
+
 services:
   mailhog:
     image: mailhog/mailhog
     expose:
       - 1025
       - 8025
+
   db:
     image: ledgersmb/ledgersmb-dev-postgres
     environment:
@@ -12,14 +14,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - dbdata:/var/lib/postgresql/data
-  selenium:
-    image: wernight/phantomjs:2.1.1
-    command: phantomjs --webdriver=4422
-    stop_signal: SIGKILL
-    expose:
-      - 4422
-    environment:
-      LANG: en_US.UTF-8
+
   lsmb:
     depends_on:
       - db
@@ -32,7 +27,6 @@ services:
     volumes:
       - type: bind
         target: /srv/ledgersmb
-#        target: /home/circleci
         source: ${PWD}
     environment:
       - PLACK_SERVER=HTTP::Server::Simple
@@ -47,27 +41,28 @@ services:
       - LSMB_NEW_DB=lsmbtestdb
       - COA_TESTING=1
       - REMOTE_SERVER_ADDR=selenium
+      - BROWSER=${BROWSER:-chrome}
       - PGHOST=postgres
       - PGUSER=postgres
       - PGPASSWORD=abc
       - SSMTP_HOSTNAME=mailhog
       - SSMTP_MAILHUB=mailhog:1025
+
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
     expose:
-      - 80
+      - 5000
+    ports:
+      - 5000:80
     depends_on:
       - lsmb
     volumes:
       - type: bind
-#        target: /home/circleci
         target: /srv/ledgersmb
         source: ${PWD}
-
 
 volumes:
   dbdata:
     driver_opts:
       type: tmpfs
       device: tmpfs
-
