@@ -29,7 +29,6 @@ services:
         target: /srv/ledgersmb
         source: ${PWD}
     environment:
-      - PLACK_SERVER=HTTP::Server::Simple
       - PERL5OPT
       - HARNESS_PERL_SWITCHES
       - RELEASE_TESTING=1
