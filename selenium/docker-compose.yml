@@ -4,13 +4,9 @@ services:
 
   selenium:
     image: selenium/hub
-    container_name: selenium
-    hostname: selenium
     privileged: true
-    expose:
-      - 4422
     ports:
-      - "4422:4444"
+      - 4444:4444
     volumes:
       - /dev/shm:/dev/shm
     environment:

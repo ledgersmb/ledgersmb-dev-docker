@@ -1,11 +1,18 @@
 version: "3.2"
 
+networks:
+  internal:
+    driver: bridge
+    internal: yes
+
 services:
   mailhog:
     image: mailhog/mailhog
     expose:
       - 1025
       - 8025
+    networks:
+      - internal
 
   db:
     image: ledgersmb/ledgersmb-dev-postgres
@@ -14,6 +21,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - dbdata:/var/lib/postgresql/data
+    networks:
+      - internal
 
   lsmb:
     depends_on:
@@ -24,10 +33,14 @@ services:
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
     links:
       - "db:postgres"
+      - selenium
     volumes:
       - type: bind
         target: /srv/ledgersmb
         source: ${PWD}
+      - type: bind
+        target: $HOME
+        source: $HOME
       - /etc/group:/etc/group:ro
       - /etc/passwd:/etc/passwd:ro
       - /etc/shadow:/etc/shadow:ro
@@ -37,6 +50,7 @@ services:
       - RELEASE_TESTING=1
       - HARNESS_RULESFILE="t/testrules.yml"
       - DEVEL_COVER_OPTIONS
+      - LANG=C.UTF-8
       - LSMB_BASE_URL=http://proxy:80
       - PSGI_BASE_URL=http://lsmb:5762
       - LSMB_TEST_DB=1
@@ -49,6 +63,9 @@ services:
       - PGPASSWORD=abc
       - SSMTP_HOSTNAME=mailhog
       - SSMTP_MAILHUB=mailhog:1025
+    networks:
+      - internal
+      - default
 
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
@@ -62,6 +79,9 @@ services:
       - type: bind
         target: /srv/ledgersmb
         source: ${PWD}
+    networks:
+      - default
+      - internal
 
 volumes:
   dbdata:
