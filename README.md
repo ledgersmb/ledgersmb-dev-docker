@@ -38,19 +38,27 @@ http://172.20.0.6
 ======================================
 ```
 
-Five containers are created:
+Ten containers are created:
 
 * `ldmaster_db_1`
 * `ldmaster_lsmb_1`
-* `ldmaster_selenium_1`
 * `ldmaster_mailhog_1`
 * `ldmaster_proxy_1`
+* `ldmaster_selenium_1`
+* `ldmaster_chrome_1`
+* `ldmaster_chrome_2`
+* `ldmaster_chrome_3`
+* `ldmaster_chrome_4`
+* `ldmaster_chrome_5`
 
 The `LedgerSMB` directory is mapped to the `/srv/ledgersmb` directory
 inside the `ldmaster_lsmb_1` and `ldmaster_proyxy_1` containers. The
 database container creates its database storage on a "RAM drive",
 meaning that restarting the container causes all existing databases
 to be flushed.
+
+A Selenium grid is created with a hub and 5 copies of the browser you selected,
+Chrome is set per default. Firefox and Opera are supported.
 
 ## Creating JavaScript output
 
@@ -77,13 +85,13 @@ http://172.20.0.6/login.pl allows to log into the company.
 
 Three commands exist to run tests:
 
-* `make test`  
+* `make test`
    Runs the tests in the `t/` directory
-* `make devtest`  
+* `make devtest`
    Runs the tests in the `t/` and `xt/` directories
-* `make pherkin`  
+* `make pherkin`
   Runs the tests `xt/**/*.feature`
-  
+
 The set of tests to be run can be restricted using the `TESTS` Makefile
 variable:
 
@@ -143,15 +151,20 @@ $ git clone -b 1.8 https://github.com/ledgersmb/LedgerSMB.git
 $ git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
 $ cd LedgerSMB
 $ ../ldd/lsmb-dev 18 pull
-$ ../ldd/lsmb-dev 18 up -d
+$ BROWSER=firefox ../ldd/lsmb-dev 18 up -d
 ```
-This creates 5 additional containers:
+This creates 10 additional containers:
 * `ld18_db_1`
 * `ld18_lsmb_1`
 * `ld18_selenium_1`
 * `ld18_mailhog_1`
 * `ld18_proxy_1`
-
+* `ld18_selenium_1`
+* `ld18_firefox_1`
+* `ld18_firefox_2`
+* `ld18_firefox_3`
+* `ld18_firefox_4`
+* `ld18_firefox_5`
 
 
 # DB (PostgreSQL)
