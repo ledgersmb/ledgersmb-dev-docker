@@ -149,6 +149,9 @@ ENV POSTGRES_HOST postgres
 ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
 
+# Upgrade npm from v6 provided by buster
+RUN sudo npm install -g npm@7.14.0
+
 COPY start.sh /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh && \
