@@ -17,7 +17,7 @@ services:
   db:
     image: ledgersmb/ledgersmb-dev-postgres
     environment:
-      POSTGRES_PASSWORD: abc
+      POSTGRES_PASSWORD: ${PGPASSWORD:-abc}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - dbdata:/var/lib/postgresql/data
@@ -40,7 +40,7 @@ services:
         source: ${PWD}
       - type: bind
         target: $HOME
-        source: $HOME
+        source: $HOME_DEV
       - /etc/group:/etc/group:ro
       - /etc/passwd:/etc/passwd:ro
       - /etc/shadow:/etc/shadow:ro
@@ -60,7 +60,7 @@ services:
       - BROWSER=${BROWSER:-chrome}
       - PGHOST=postgres
       - PGUSER=postgres
-      - PGPASSWORD=abc
+      - PGPASSWORD=${PGPASSWORD:-abc}
       - SSMTP_HOSTNAME=mailhog
       - SSMTP_MAILHUB=mailhog:1025
     networks:
