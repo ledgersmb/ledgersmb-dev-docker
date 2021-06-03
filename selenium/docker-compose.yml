@@ -1,5 +1,10 @@
 version: '3.2'
 
+networks:
+  grid:
+    driver: bridge
+    internal: yes
+
 services:
 
   selenium:
@@ -15,3 +20,5 @@ services:
       - GRID_MAX_SESSION=50
       - GRID_TIMEOUT=1800
       - GRID_DEBUG=true
+    networks:
+      - grid

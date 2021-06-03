@@ -72,6 +72,7 @@ services:
     networks:
       - internal
       - default
+      - grid
 
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
@@ -90,6 +91,7 @@ services:
     networks:
       - default
       - internal
+      - grid
 
 volumes:
   dbdata:
