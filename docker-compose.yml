@@ -8,6 +8,8 @@ networks:
 services:
   mailhog:
     image: mailhog/mailhog
+    hostname: mailhog
+    container_name: ${COMPOSE_PROJECT_NAME}_mailhog
     expose:
       - 1025
       - 8025
@@ -16,6 +18,8 @@ services:
 
   db:
     image: ledgersmb/ledgersmb-dev-postgres
+    hostname: db
+    container_name: ${COMPOSE_PROJECT_NAME}_db
     environment:
       POSTGRES_PASSWORD: ${PGPASSWORD:-abc}
       PGDATA: /var/lib/postgresql/data/pgdata
@@ -31,6 +35,8 @@ services:
       - mailhog
     user: "${USER}"
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
+    hostname: lsmb
+    container_name: ${COMPOSE_PROJECT_NAME}_lsmb
     links:
       - "db:postgres"
       - selenium
@@ -69,6 +75,8 @@ services:
 
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
+    hostname: ${COMPOSE_PROJECT_NAME}_proxy
+    container_name: ${COMPOSE_PROJECT_NAME}_proxy
     expose:
       - 5000
     ports:

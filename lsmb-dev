@@ -28,7 +28,7 @@ show_logs() { # shows the last 5 minutes of logs for the lsmb container
 	EOF
 
     sleep 5; # need a little time for the logs to get updated unfortunately
-    docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb_1";
+    docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb";
 
     cat <<-EOF
 
@@ -40,7 +40,7 @@ show_logs() { # shows the last 5 minutes of logs for the lsmb container
 
 is_container_running() {
     local z;
-    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb_1" --quiet 2>/dev/null`;
+    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb" --quiet 2>/dev/null`;
     test -n "$z";
 }
 
@@ -110,7 +110,7 @@ fi
 
 if ! test -e Makefile.local ; then
     cat >Makefile.local <<-EOF
-	CONTAINER=${COMPOSE_PROJECT_NAME}_lsmb_1
+	CONTAINER=${COMPOSE_PROJECT_NAME}_lsmb
 	#PHERKIN_EXTRA_OPTS=--theme=light
 	#DOCKER_CMD=
 	#PHERKIN_OPTS=
@@ -119,7 +119,7 @@ if ! test -e Makefile.local ; then
 
     echo "Created Makefile.local causing e.g. 'make test' to run in the container"
 else
-    if test -z "`grep ${COMPOSE_PROJECT_NAME}_lsmb_1 Makefile.local`" ; then
-        echo "'Makefile.local' missing reference to container '${COMPOSE_PROJECT_NAME}_lsmb_1\nplease update it manually"
+    if test -z "`grep ${COMPOSE_PROJECT_NAME}_lsmb Makefile.local`" ; then
+        echo "'Makefile.local' missing reference to container '${COMPOSE_PROJECT_NAME}_lsmb\nplease update it manually"
     fi
 fi
