@@ -60,7 +60,7 @@ services:
       - LSMB_BASE_URL=http://proxy:80
       - PSGI_BASE_URL=http://lsmb:5762
       - LSMB_TEST_DB=1
-      - LSMB_NEW_DB=lsmbtestdb
+      - LSMB_NEW_DB=lsmb_test
       - COA_TESTING=1
       - REMOTE_SERVER_ADDR=selenium
       - BROWSER=${BROWSER:-chrome}

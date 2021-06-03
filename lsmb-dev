@@ -12,7 +12,7 @@ shift
 _CWD=$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))
 
 BROWSER=${BROWSER:-chrome}
-BROWSER_COUNT=${BROWSER_COUNT:-5}
+BROWSERS_COUNT=${BROWSERS_COUNT:-5}
 
 if [ ! -f ../ldd/selenium/docker-compose-${BROWSER}.yml ]; then
   echo "Unconfigured browser $BROWSER. Please define $_CWD/selenium/docker-compose-${BROWSER}.yml"
@@ -90,7 +90,7 @@ fi
 
 SCALE=""
 if test "$1" = "up" ; then
-    SCALE="--scale $BROWSER=$BROWSER_COUNT"
+    SCALE="--scale $BROWSER=$BROWSERS_COUNT"
 fi
 
 # generate and start the containers
