@@ -78,12 +78,10 @@ services:
     image: ledgersmb/ledgersmb-dev-nginx
     hostname: ${COMPOSE_PROJECT_NAME}_proxy
     container_name: ${COMPOSE_PROJECT_NAME}_proxy
-    expose:
-      - 5000
-    ports:
-      - 5000:80
     depends_on:
       - lsmb
+    ports:
+      - 80
     volumes:
       - type: bind
         target: /srv/ledgersmb
