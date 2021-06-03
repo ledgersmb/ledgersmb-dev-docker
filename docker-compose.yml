@@ -81,7 +81,7 @@ services:
     depends_on:
       - lsmb
     ports:
-      - 80
+      - ${LSMB_PORT:-0}:80
     volumes:
       - type: bind
         target: /srv/ledgersmb
