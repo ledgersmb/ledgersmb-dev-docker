@@ -52,7 +52,9 @@ show_result() {
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
 	======================================
-	http://${IpAddr}
+    host:  http://${IpAddr_host}:${HostPort}
+	proxy: http://${IpAddr_proxy}
+	psgi:  http://${IpAddr_lsmb}:5762
 	======================================
 
 	EOF
@@ -102,8 +104,11 @@ if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # don't try to report the ip and url if the command is one of
   # pull, rm, stop,
 
-  # report the IP address in the form of a URL
-  IpAddr=`docker inspect -f '{{.NetworkSettings.Networks.ldmaster_default.IPAddress}}' "${COMPOSE_PROJECT_NAME}_proxy_1"`
+  # report the IP address in the form of URLs
+  HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
+  IpAddr_host=`hostname`
+  IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
+  IpAddr_lsmb=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_lsmb"`
 
   show_result
 elif test "$1" = "rm"; then
