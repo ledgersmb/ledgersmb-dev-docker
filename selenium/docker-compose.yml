@@ -1,0 +1,24 @@
+version: '3.2'
+
+networks:
+  grid:
+    driver: bridge
+    internal: yes
+
+services:
+
+  selenium:
+    image: selenium/hub
+    hostname: ${COMPOSE_PROJECT_NAME}_selenium
+    container_name: ${COMPOSE_PROJECT_NAME}_selenium
+    privileged: true
+    ports:
+      - 4444:4444
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      - GRID_MAX_SESSION=50
+      - GRID_TIMEOUT=1800
+      - GRID_DEBUG=true
+    networks:
+      - grid

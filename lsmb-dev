@@ -2,45 +2,61 @@
 
 # set -x
 
+if [ -f ../ldd/.local/.env ]; then
+    source ../ldd/.local/.env
+fi
+
 export COMPOSE_PROJECT_NAME=ld$1
 shift
+
+_CWD=$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))
+
+BROWSER=${BROWSER:-chrome}
+BROWSERS_COUNT=${BROWSERS_COUNT:-5}
+
+if [ ! -f ../ldd/selenium/docker-compose-${BROWSER}.yml ]; then
+  echo "Unconfigured browser $BROWSER. Please define $_CWD/selenium/docker-compose-${BROWSER}.yml"
+  exit
+fi
 
 # define a log output function
 show_logs() { # shows the last 5 minutes of logs for the lsmb container
     cat <<-EOF
-	
+
 	======================================
-	
+
 	EOF
 
     sleep 5; # need a little time for the logs to get updated unfortunately
-    docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb_1";
+    docker logs --since $(( `date "+%s"` - (5*60) )) "${COMPOSE_PROJECT_NAME}_lsmb";
 
     cat <<-EOF
-	
+
 	======================================
-	
+
 	EOF
 
 }
 
 is_container_running() {
     local z;
-    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb_1" --quiet 2>/dev/null`;
+    z=`docker ps --filter "status=running" --filter="name=${COMPOSE_PROJECT_NAME}_lsmb" --quiet 2>/dev/null`;
     test -n "$z";
 }
 
 show_result() {
     if is_container_running; then
         cat <<-EOF
-	
+
 	======================================
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
 	======================================
-	http://${IpAddr}
+    host:  http://${IpAddr_host}:${HostPort}
+	proxy: http://${IpAddr_proxy}
+	psgi:  http://${IpAddr_lsmb}:5762
 	======================================
-	
+
 	EOF
         return 0
     else
@@ -60,34 +76,51 @@ if ! test -r "${DirName}/lib/LedgerSMB.pm"; then
 	== You don't appear to be running me  ==
 	== from a valid LedgerSMB repository  ==
 	========================================
-	
+
 	EOF
     exit 9
 fi
 
 # Check for a local (non repo) version of the yml file
 if test -r docker-compose-local.yml; then
-    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose-local.yml"
+    F="$_CWD/docker-compose-local.yml"
 else
-    F="$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))/docker-compose.yml"
+    F="$_CWD/docker-compose.yml"
+fi
+
+SCALE=""
+if test "$1" = "up" ; then
+    SCALE="--scale $BROWSER=$BROWSERS_COUNT"
 fi
 
 # generate and start the containers
-USER="$UID:$GID" docker-compose -f "$F" "$@"
+USER="$(id -u):$(id -g)" docker-compose \
+    -f "$F" \
+    -f $_CWD/selenium/docker-compose.yml \
+    -f $_CWD/selenium/docker-compose-$BROWSER.yml \
+    "$@" $SCALE
 
 if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # don't try to report the ip and url if the command is one of
   # pull, rm, stop,
 
-  # report the IP address in the form of a URL
-  IpAddr=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "${COMPOSE_PROJECT_NAME}_proxy_1"`
+  # report the IP address in the form of URLs
+  HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
+  IpAddr_host=`hostname`
+  IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
+  IpAddr_lsmb=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_lsmb"`
 
   show_result
+elif test "$1" = "rm"; then
+  # Remove networks
+  docker network rm ${COMPOSE_PROJECT_NAME}_default
+  docker network rm ${COMPOSE_PROJECT_NAME}_grid
+  docker network rm ${COMPOSE_PROJECT_NAME}_internal
 fi
 
 if ! test -e Makefile.local ; then
     cat >Makefile.local <<-EOF
-	CONTAINER=${COMPOSE_PROJECT_NAME}_lsmb_1
+	CONTAINER=${COMPOSE_PROJECT_NAME}_lsmb
 	#PHERKIN_EXTRA_OPTS=--theme=light
 	#DOCKER_CMD=
 	#PHERKIN_OPTS=
@@ -96,7 +129,7 @@ if ! test -e Makefile.local ; then
 
     echo "Created Makefile.local causing e.g. 'make test' to run in the container"
 else
-    if test -z "`grep ${COMPOSE_PROJECT_NAME}_lsmb_1 Makefile.local`" ; then
-        echo "'Makefile.local' missing reference to container '${COMPOSE_PROJECT_NAME}_lsmb_1\nplease update it manually"
+    if test -z "`grep ${COMPOSE_PROJECT_NAME}_lsmb Makefile.local`" ; then
+        echo "'Makefile.local' missing reference to container '${COMPOSE_PROJECT_NAME}_lsmb\nplease update it manually"
     fi
 fi

@@ -1,25 +1,33 @@
 version: "3.2"
+
+networks:
+  internal:
+    driver: bridge
+    internal: yes
+
 services:
   mailhog:
     image: mailhog/mailhog
+    hostname: mailhog
+    container_name: ${COMPOSE_PROJECT_NAME}_mailhog
     expose:
       - 1025
       - 8025
+    networks:
+      - internal
+
   db:
     image: ledgersmb/ledgersmb-dev-postgres
+    hostname: db
+    container_name: ${COMPOSE_PROJECT_NAME}_db
     environment:
-      POSTGRES_PASSWORD: abc
+      POSTGRES_PASSWORD: ${PGPASSWORD:-abc}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - dbdata:/var/lib/postgresql/data
-  selenium:
-    image: wernight/phantomjs:2.1.1
-    command: phantomjs --webdriver=4422
-    stop_signal: SIGKILL
-    expose:
-      - 4422
-    environment:
-      LANG: en_US.UTF-8
+    networks:
+      - internal
+
   lsmb:
     depends_on:
       - db
@@ -27,47 +35,66 @@ services:
       - mailhog
     user: "${USER}"
     image: ${LSMB_IMAGE:-ledgersmb/ledgersmb-dev-lsmb}
+    hostname: lsmb
+    container_name: ${COMPOSE_PROJECT_NAME}_lsmb
     links:
       - "db:postgres"
+      - selenium
     volumes:
       - type: bind
         target: /srv/ledgersmb
-#        target: /home/circleci
         source: ${PWD}
+      - type: bind
+        target: $HOME
+        source: $HOME_DEV
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
     environment:
-      - PLACK_SERVER=HTTP::Server::Simple
       - PERL5OPT
       - HARNESS_PERL_SWITCHES
       - RELEASE_TESTING=1
       - HARNESS_RULESFILE="t/testrules.yml"
       - DEVEL_COVER_OPTIONS
+      - LANG=C.UTF-8
       - LSMB_BASE_URL=http://proxy:80
       - PSGI_BASE_URL=http://lsmb:5762
       - LSMB_TEST_DB=1
-      - LSMB_NEW_DB=lsmbtestdb
+      - LSMB_NEW_DB=lsmb_test
       - COA_TESTING=1
       - REMOTE_SERVER_ADDR=selenium
+      - BROWSER=${BROWSER:-chrome}
       - PGHOST=postgres
       - PGUSER=postgres
-      - PGPASSWORD=abc
+      - PGPASSWORD=${PGPASSWORD:-abc}
       - SSMTP_HOSTNAME=mailhog
       - SSMTP_MAILHUB=mailhog:1025
+    networks:
+      - internal
+      - default
+      - grid
+
   proxy:
     image: ledgersmb/ledgersmb-dev-nginx
-    expose:
-      - 80
+    hostname: ${COMPOSE_PROJECT_NAME}_proxy
+    container_name: ${COMPOSE_PROJECT_NAME}_proxy
     depends_on:
       - lsmb
+    ports:
+      - ${LSMB_PORT:-0}:80
     volumes:
       - type: bind
-#        target: /home/circleci
         target: /srv/ledgersmb
         source: ${PWD}
-
+      # Uncomment to override the default configuration
+      - ../ldd/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - default
+      - internal
+      - grid
 
 volumes:
   dbdata:
     driver_opts:
       type: tmpfs
       device: tmpfs
-

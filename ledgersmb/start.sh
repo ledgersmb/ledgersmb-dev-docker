@@ -21,7 +21,15 @@ else
    psgi_app=/srv/ledgersmb/tools/starman.psgi
 fi
 
+# Allow ledgersmb-admin to work
+PERL5LIB=lib
+export PERL5LIB
+
 # start ledgersmb
 PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
 export PERL5OPT
 exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib --port 5762 $psgi_app
+
+if [[ -x .local/start.sh ]]
+   .local/start.sh
+fi

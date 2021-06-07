@@ -1,5 +1,5 @@
 FROM        debian:buster
-MAINTAINER  Freelock john@freelock.com
+LABEL       maintainer="Freelock john@freelock.com"
 
 
 # Install Perl, Tex, Starman, psql client, and all dependencies
@@ -14,7 +14,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
                                       wget gnupg2 && \
-  curl -L https://deb.nodesource.com/setup_12.x -o ./setup && \
+  curl -L https://deb.nodesource.com/setup_15.x -o ./setup && \
   bash ./setup && rm ./setup && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y upgrade && \
@@ -155,6 +155,9 @@ ENV SSMTP_FROMLINE_OVERRIDE YES
 ENV POSTGRES_HOST postgres
 ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
+
+# Upgrade npm from v6 provided by buster
+RUN sudo npm install -g npm@7.14.0
 
 COPY start.sh /usr/local/bin/start.sh
 
