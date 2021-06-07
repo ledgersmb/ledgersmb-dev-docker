@@ -85,13 +85,13 @@ http://172.20.0.6/login.pl allows to log into the company.
 
 Three commands exist to run tests:
 
-* `make test`
+* `make test`\
    Runs the tests in the `t/` directory
-* `make devtest`
+* `make devtest`\
    Runs the tests in the `t/` and `xt/` directories
-* `make pherkin`
+* `make pherkin`\
   Runs the tests `xt/**/*.feature`
-
+\
 The set of tests to be run can be restricted using the `TESTS` Makefile
 variable:
 
