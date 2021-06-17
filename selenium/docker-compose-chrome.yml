@@ -3,7 +3,7 @@ version: '3.2'
 services:
 
   chrome:
-    image: selenium/node-chrome
+    image: selenium/node-chrome:3
     depends_on:
       - selenium
     volumes:

@@ -3,7 +3,7 @@ version: '3.2'
 services:
 
   operablink:
-    image: selenium/node-opera
+    image: selenium/node-opera:3
     volumes:
       - /dev/shm:/dev/shm
     depends_on:
