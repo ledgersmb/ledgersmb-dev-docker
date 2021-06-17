@@ -52,13 +52,13 @@ show_result() {
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
 	======================================
-    host:  http://${IpAddr_host}:${HostPort}
+	host:  http://${IpAddr_host}:${HostPort}
 	proxy: http://${IpAddr_proxy}
 	psgi:  http://${IpAddr_lsmb}:5762
 	======================================
-    == Postgres Database can be accessed at
+	== Postgres Database can be accessed at
 	======================================
-    db:  http://${IpAddr_host}:${DBPort}
+	db:  http://${IpAddr_host}:${DBPort}
 	======================================
 
 	EOF
