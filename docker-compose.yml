@@ -27,7 +27,7 @@ services:
       - dbdata:/var/lib/postgresql/data
     ports:
       - ${DB_PORT:-0}:5432
-      networks:
+    networks:
       - internal
       - default
 
