@@ -8,7 +8,7 @@ networks:
 services:
 
   selenium:
-    image: selenium/hub
+    image: selenium/hub:3
     hostname: ${COMPOSE_PROJECT_NAME}_selenium
     container_name: ${COMPOSE_PROJECT_NAME}_selenium
     privileged: true
