@@ -25,8 +25,11 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - dbdata:/var/lib/postgresql/data
-    networks:
+    ports:
+      - ${DB_PORT:-0}:5432
+      networks:
       - internal
+      - default
 
   lsmb:
     depends_on:

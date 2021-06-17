@@ -56,6 +56,10 @@ show_result() {
 	proxy: http://${IpAddr_proxy}
 	psgi:  http://${IpAddr_lsmb}:5762
 	======================================
+    == Postgres Database can be accessed at
+	======================================
+    db:  http://${IpAddr_host}:${DBPort}
+	======================================
 
 	EOF
         return 0
@@ -105,6 +109,7 @@ if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # pull, rm, stop,
 
   # report the IP address in the form of URLs
+  DBPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_db"`
   HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
   IpAddr_host=`hostname`
   IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
