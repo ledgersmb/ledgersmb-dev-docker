@@ -13,6 +13,7 @@ _CWD=$(dirname $(perl -e "use Cwd qw(realpath); print realpath '$0'"))
 
 BROWSER=${BROWSER:-chrome}
 BROWSERS_COUNT=${BROWSERS_COUNT:-5}
+export HOME_DEV=${HOME_DEV:-$PWD/.local}
 
 if [ ! -f ../ldd/selenium/docker-compose-${BROWSER}.yml ]; then
   echo "Unconfigured browser $BROWSER. Please define $_CWD/selenium/docker-compose-${BROWSER}.yml"

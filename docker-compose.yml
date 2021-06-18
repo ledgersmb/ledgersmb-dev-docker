@@ -49,7 +49,7 @@ services:
         source: ${PWD}
       - type: bind
         target: $HOME
-        source: ${HOME_DEV:-$PWD/.local}
+        source: $HOME_DEV
       - /etc/group:/etc/group:ro
       - /etc/passwd:/etc/passwd:ro
       - /etc/shadow:/etc/shadow:ro
