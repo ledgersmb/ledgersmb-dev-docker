@@ -99,7 +99,6 @@ RUN cd /srv && \
     --with-feature=xls \
     --with-feature=edi \
     --installdeps . && \
-  make dojo && \
   git checkout -b 1.5 origin/1.5 && \
   cpanm --quiet --notest \
     --with-develop \
@@ -140,6 +139,7 @@ RUN cd /srv && \
     --with-feature=openoffice \
     --with-feature=edi \
     --installdeps . && \
+  make dojo && \
   cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
@@ -165,7 +165,7 @@ ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
 
 # Upgrade npm from v6 provided by buster
-RUN sudo npm install -g npm@7.14.0
+RUN npm install -g npm@7.14.0
 
 COPY start.sh /usr/local/bin/start.sh
 
