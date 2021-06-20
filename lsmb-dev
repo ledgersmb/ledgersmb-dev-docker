@@ -87,7 +87,7 @@ if ! test -r "${DirName}/lib/LedgerSMB.pm"; then
 fi
 
 # Check for a local (non repo) version of the yml file
-if test -r docker-compose-local.yml; then
+if test -r $_CWD/docker-compose-local.yml; then
     F="$_CWD/docker-compose-local.yml"
 else
     F="$_CWD/docker-compose.yml"
