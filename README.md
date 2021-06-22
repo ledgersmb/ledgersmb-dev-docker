@@ -34,7 +34,13 @@ $ ../ldd/lsmb-dev master up -d
 == LedgerSMB 'master'
 == should be available at
 ======================================
-http://172.20.0.6
+host:  http://host:32452
+proxy: http://172.29.0.4
+psgi:  http://172.29.0.3:5762
+======================================
+== Postgres Database can be accessed at
+======================================
+db:  http://host:45632
 ======================================
 ```
 
@@ -74,13 +80,48 @@ After editing the code in `UI/js-src/`, this command needs to be re-run.
 
 ## Accessing LedgerSMB
 
-As per the example above, you should be able to browse to
-http://172.20.0.6/setup.pl to create a test database. The password of
-the `postgres` user is `abc`.
+As per the example above, you should be able to browse to your host at
+http://host:32452/setup.pl if you want to go through the proxy or at
+http://172.20.0.6/setup.pl to to go directly and create a test database.
+The default password of the `postgres` user is `abc`.
 
 Similarly, when a test company exists, browsing to
 http://172.20.0.6/login.pl allows to log into the company.
 
+The postgres database is made available at http://host:45632 on the example
+above, should you want to browse it.
+
+All host ports are assigned randomly on available ports to not clash with the
+host but this can be overriden
+
+## Environment variables
+
+Defaults can be overriden by setting environment variables. By default,
+`.local/.env` is read if available at container startup for local overrides and
+can contain the following:
+```
+# Set local defaults for environment variables
+
+# Database user and password
+# export PGUSER=postgres
+# export PGPASSWORD=abc
+
+# Browser to use by default, can be overriden on command line
+export BROWSER=${BROWSER:-chrome}
+
+# Browser instances to create, can be overriden on command line
+export BROWSERS_COUNT=${BROWSERS_COUNT:-5}
+
+# Home directory for the container user
+export HOME_DEV=../LedgerSMB/.local/home
+
+# Uncomment to fix host ports used
+# export LSMB_PORT=5000
+# export DB_PORT=5432
+
+# Uncomment to use a customized ledgersmb-dev-test image.
+# export LSMB_IMAGE=user/ledgersmb-dev-test:latest
+```
 ## Running tests
 
 Three commands exist to run tests:
