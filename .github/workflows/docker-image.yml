@@ -1,0 +1,50 @@
+name: Docker Image CI
+
+on: [push, pull_request]
+
+jobs:
+  ledgersmb:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build and push to Docker Hub
+      uses: whoan/docker-build-with-cache-action@v5
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+        image_name: ${{ github.repository_owner }}/ledgersmb-dev-lsmb
+        image_tag: latest
+        context: ledgersmb
+        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+  proxy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build and push to Docker Hub
+      uses: whoan/docker-build-with-cache-action@v5
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+        image_name: ${{ github.repository_owner }}/ledgersmb-dev-nginx
+        image_tag: latest
+        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        context: nginx
+        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+  postgres:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build and push to Docker Hub
+      uses: whoan/docker-build-with-cache-action@v5
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+        image_name: ${{ github.repository_owner }}/ledgersmb-dev-postgres
+        image_tag: latest
+        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        context: postgres
+        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
