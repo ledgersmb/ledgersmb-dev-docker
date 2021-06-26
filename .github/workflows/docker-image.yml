@@ -1,6 +1,14 @@
 name: Docker Image CI
 
-on: [push, pull_request]
+on: 
+  push:
+    branches-ignore:
+      - 'master'
+  pull_request:
+    branches:
+      - '*'
+  repository_dispatch:
+    types: [master-updated]
 
 jobs:
   ledgersmb:
