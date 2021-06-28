@@ -31,7 +31,7 @@ jobs:
 
   proxy:
     runs-on: ubuntu-latest
-    if: github.event.action != "master-updated"
+    if: github.event.action != 'master-updated'
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -48,7 +48,7 @@ jobs:
 
   postgres:
     runs-on: ubuntu-latest
-    if: github.event.action != "master-updated"
+    if: github.event.action != 'master-updated'
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
