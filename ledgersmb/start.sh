@@ -3,7 +3,9 @@
 cd /srv/ledgersmb
 
 if [[ ! -f ledgersmb.conf ]]; then
-  cp conf/ledgersmb.conf.default ledgersmb.conf
+  [[ -f doc/conf/ledgersmb.conf.default ]] \
+      && cp doc/conf/ledgersmb.conf.default ledgersmb.conf
+  [[ ! -f ledgersmb.conf ]] && cp conf/ledgersmb.conf.default ledgersmb.conf
   sed -i \
     -e "s/\(cache_templates = \).*\$/cache_templates = 1/g" \
     -e "s/\(host = \).*\$/\1$POSTGRES_HOST/g" \
@@ -12,7 +14,7 @@ if [[ ! -f ledgersmb.conf ]]; then
     -e "s%\(sendmail   = \).*%#\1/usr/sbin/ssmtp%g" \
     -e "s/# \(smtphost = \).*\$/\1mailhog:1025/g" \
     -e "s/# \(backup_email_from = \).*\$/\1lsmb-backups@example.com/g" \
-    /srv/ledgersmb/ledgersmb.conf
+    ledgersmb.conf
 fi
 
 if [[ -e bin/ledgersmb-server.psgi ]]; then

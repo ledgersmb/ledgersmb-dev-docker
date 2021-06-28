@@ -2,8 +2,12 @@
 
 # set -x
 
-if [ -f ../ldd/.local/.env ]; then
-    source ../ldd/.local/.env
+scriptdir=$(dirname "$(readlink -f "$0")")
+scriptname=$(readlink -f "$0")
+
+[[ -d $HOME/bin ]] && [[ ! -e $HOME/bin/lsmb-dev ]] && ln -s $scriptname $HOME/bin/lsmb-dev
+if [ -f $scripdir/.local/.env ]; then
+    source $scriptdir/.local/.env
 fi
 
 export COMPOSE_PROJECT_NAME=ld$1
@@ -15,7 +19,7 @@ BROWSER=${BROWSER:-chrome}
 BROWSERS_COUNT=${BROWSERS_COUNT:-5}
 export HOME_DEV=${HOME_DEV:-$PWD/.local}
 
-if [ ! -f ../ldd/selenium/docker-compose-${BROWSER}.yml ]; then
+if [ ! -f $scriptdir/selenium/docker-compose-${BROWSER}.yml ]; then
   echo "Unconfigured browser $BROWSER. Please define $_CWD/selenium/docker-compose-${BROWSER}.yml"
   exit
 fi
