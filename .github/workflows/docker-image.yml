@@ -12,7 +12,6 @@ on:
     types: [master-updated]
 
 jobs:
-
   ledgersmb:
     runs-on: ubuntu-latest
     steps:
@@ -28,10 +27,8 @@ jobs:
         context: ledgersmb
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
         push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-
   proxy:
     runs-on: ubuntu-latest
-    if: github.event.action != 'master-updated'
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -45,10 +42,8 @@ jobs:
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
         context: nginx
         push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-
   postgres:
     runs-on: ubuntu-latest
-    if: github.event.action != 'master-updated'
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
