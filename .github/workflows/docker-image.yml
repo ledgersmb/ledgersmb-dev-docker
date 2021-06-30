@@ -21,7 +21,7 @@ jobs:
       uses: whoan/docker-build-with-cache-action@v5
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.DOCKER_TOKEN }}
         image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-lsmb
         image_tag: latest
         context: ledgersmb
@@ -36,7 +36,7 @@ jobs:
       uses: whoan/docker-build-with-cache-action@v5
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.DOCKER_TOKEN }}
         image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-nginx
         image_tag: latest
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
@@ -51,7 +51,7 @@ jobs:
       uses: whoan/docker-build-with-cache-action@v5
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.DOCKER_TOKEN }}
         image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-postgres
         image_tag: latest
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
