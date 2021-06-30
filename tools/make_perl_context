@@ -66,7 +66,7 @@ MAINTAINER  Nick Prater nick@npbroadcast.com
 # ledgersmb development and test container created
 # from official perl images.
 
-# Dockerfile based on official ledgersmb/ledgersmb-dev-lsmb
+# Dockerfile based on official ledgersmbdev/ledgersmb-dev-lsmb
 
 # No point installing perl libraries via apt-get as we're
 # using the official perl container, which doesn't use the
