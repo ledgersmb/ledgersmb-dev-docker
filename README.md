@@ -3,8 +3,8 @@
 Provides `docker-compose` infrastructure to kick off a local development
 and test environment for LedgerSMB.
 
-The infrastructure is based on the `ledgersmb/ledgersmb-dev-postgres`,
-`ledgersmb/ledgersmb-dev-nginx` and `ledgersmb/ledgersmb-dev-lsmb`
+The infrastructure is based on the `ledgersmbdev/ledgersmb-dev-postgres`,
+`ledgersmbdev/ledgersmb-dev-nginx` and `ledgersmbdev/ledgersmb-dev-lsmb`
 LedgerSMB containers, the `wernight/phantomjs`
 selenium tester container and the `mailhog/mailhog` mail testing tool.
 
@@ -248,4 +248,4 @@ Running:
 
 Will create a new docker context for the specified perl version, from
 which an image can be built and used in place of the oficial
-`ledgersmb/ledgersmb-dev-lsmb` image.
+`ledgersmbdev/ledgersmb-dev-lsmb` image.
