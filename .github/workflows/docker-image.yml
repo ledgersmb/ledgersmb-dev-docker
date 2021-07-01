@@ -26,7 +26,7 @@ jobs:
         image_tag: latest
         context: ledgersmb
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        push_image_and_stages: false
   proxy:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +41,7 @@ jobs:
         image_tag: latest
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
         context: nginx
-        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        push_image_and_stages: false
   postgres:
     runs-on: ubuntu-latest
     steps:
@@ -56,4 +56,4 @@ jobs:
         image_tag: latest
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
         context: postgres
-        push_image_and_stages: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        push_image_and_stages: false

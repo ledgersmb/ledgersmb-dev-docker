@@ -6,7 +6,7 @@ scriptdir=$(dirname "$(readlink -f "$0")")
 scriptname=$(readlink -f "$0")
 
 [[ -d $HOME/bin ]] && [[ ! -e $HOME/bin/lsmb-dev ]] && ln -s $scriptname $HOME/bin/lsmb-dev
-if [ -f $scripdir/.local/.env ]; then
+if [ -f $scriptdir/.local/.env ]; then
     source $scriptdir/.local/.env
 fi
 
