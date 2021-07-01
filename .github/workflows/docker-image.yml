@@ -26,6 +26,7 @@ jobs:
         image_tag: latest
         context: ledgersmb
         push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
+        pull_image_and_stages: false
   proxy:
     runs-on: ubuntu-latest
     steps:
