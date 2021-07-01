@@ -11,6 +11,7 @@ LABEL       maintainer="Freelock john@freelock.com"
 
 RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
        >> /etc/apt/apt.conf && \
+  echo "deb http://http.debian.net/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
                                       wget gnupg2 && \
@@ -51,8 +52,10 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     texlive-xetex fonts-liberation \
     lsb-release \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
-    ssh tar gzip \
+    ssh tar gzip graphviz \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
+    libtest2-suite-perl libfile-mimeinfo-perl libhtml-lint-perl \
+    libpod-projectdocs-perl libyaml-perl \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
@@ -68,22 +71,34 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql-autodoc graphviz
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y -t sid install postgresql-autodoc
+
+# Additional (testing) dependencies up to and including 1.9
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
+
 
 # Additional dependency up to and including 1.7
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
 
+# Additional dependency up to and including 1.5
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
+
+# Additional dependency up to and including 1.6
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
+
+
 # we need at least npm 7.x for our code base; Node 12.x comes with npm 6.x...
 RUN npm install -g npm
 
-RUN git clone https://github.com/cbbrowne/autodoc.git && \
-  cd autodoc && \
-  make install && \
-  cd .. && rm -rf autodoc
+#RUN git clone https://github.com/cbbrowne/autodoc.git && \
+#  cd autodoc && \
+#  make install && \
+#  cd .. && rm -rf autodoc
 
 # Build time variables
 ENV NODE_PATH /usr/lib/node_modules
 ARG CACHEBUST
+
 
 # Install LedgerSMB
 RUN cd /srv && \
