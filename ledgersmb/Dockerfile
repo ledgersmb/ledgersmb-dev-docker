@@ -57,7 +57,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
     libmodule-install-perl python3-setuptools libdist-zilla-perl \
-    python3-pip python3-urllib3 && \
+    python3-pip python3-wheel python3-urllib3 && \
   pip3 install transifex-client && \
   pip3 install --upgrade urllib3 && \
   npm install -g uglify-js@">=2.0 <3.0" && \
