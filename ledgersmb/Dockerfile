@@ -1,6 +1,7 @@
+ARG branches="1.6,1.7,1.8,1.9,master"
+
 FROM        debian:bullseye
 LABEL       maintainer="Freelock john@freelock.com"
-
 
 # Install Perl, Tex, Starman, psql client, and all dependencies
 # Without libclass-c3-xs-perl, everything grinds to a halt;
@@ -9,18 +10,12 @@ LABEL       maintainer="Freelock john@freelock.com"
 
 # 'master' and common dependency install:
 
-RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
-       >> /etc/apt/apt.conf && \
-  echo "deb http://http.debian.net/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
-                                      wget gnupg2 && \
-  curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
-  bash ./setup && rm ./setup && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y upgrade && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install \
-    gnupg \
+# make Apt non-interactive
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN echo 'APT::Install-Recommends "0";' 'APT::Install-Suggests "0";' \
+       >> /etc/apt/apt.conf
+RUN apt-get update && apt-get -y install gnupg2 \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
     libdatetime-perl libdatetime-format-strptime-perl \
@@ -50,8 +45,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libclass-c3-xs-perl liblocale-codes-perl \
     texlive-latex-recommended texlive-fonts-recommended \
     texlive-xetex fonts-liberation \
-    lsb-release \
-    git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
+    git cpanminus make gcc libperl-dev libcarp-always-perl \
     ssh tar gzip graphviz \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
     libtest2-suite-perl libfile-mimeinfo-perl libhtml-lint-perl \
@@ -63,49 +57,52 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     python3-pip python3-wheel python3-urllib3 && \
   pip3 install transifex-client && \
   pip3 install --upgrade urllib3 && \
-  npm install -g uglify-js@">=2.0 <3.0" && \
+  apt-get -y install curl ca-certificates wget gnupg2 lsb-release && \
+  (curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -) && \
+  echo "deb https://deb.nodesource.com/node_16.x $(lsb_release -s -c) main" | tee /etc/apt/sources.list.d/nodesource.list  && \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install postgresql-client
+  apt-get -y update && \
+  apt-get -y install nodejs postgresql-client
+
+# Additional (testing) dependencies up to and including 1.9
+RUN apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
+
+# Additional dependency up to and including 1.7
+RUN apt-get -y install libmime-lite-perl
+
+# Additional dependency up to and including 1.5
+RUN apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
+
+# Additional dependency up to and including 1.6
+RUN apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
+
+RUN apt-get -y install locales sudo jq bc gnuplot
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y -t sid install postgresql-autodoc
-
-# Additional (testing) dependencies up to and including 1.9
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
-
-
-# Additional dependency up to and including 1.7
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
-
-# Additional dependency up to and including 1.5
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
-
-# Additional dependency up to and including 1.6
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
-
-
-# we need at least npm 7.x for our code base; Node 12.x comes with npm 6.x...
-RUN npm install -g npm
-
-#RUN git clone https://github.com/cbbrowne/autodoc.git && \
-#  cd autodoc && \
-#  make install && \
-#  cd .. && rm -rf autodoc
+RUN echo "deb http://http.debian.net/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get -y install postgresql-autodoc
 
 # Build time variables
 ENV NODE_PATH /usr/lib/node_modules
 ARG CACHEBUST
 
-
 # Install LedgerSMB
 RUN cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
-  git remote update && \
-  cpanm --quiet --notest \
+  git remote update
+
+# FROM resets ARG, so redeclare
+ARG branches
+
+RUN cd /srv/ledgersmb && \
+  bash -c 'for branch in ${branches//,/ }; do \
+    cd /srv/ledgersmb && \
+    git checkout $branch && \
+    cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-images \
@@ -113,53 +110,14 @@ RUN cd /srv && \
     --with-feature=openoffice \
     --with-feature=xls \
     --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.5 origin/1.5 && \
-  cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.6 origin/1.6 && \
-  cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.7 origin/1.7 && \
-  cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.8 origin/1.8 && \
-  cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.9 origin/1.9 && \
-  cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
+    --installdeps . ; \
+  done' && \
   make dojo && \
-  cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
-  cpanm --quiet --notest Pod::ProjectDocs && \
-  cpanm --quiet --notest DBD::Mock && \
-  cpanm --quiet --notest Devel::Cover && \
-  cpanm --quiet --notest Devel::Cover::Report::Coveralls && \
+  cpanm --quiet --notest \
+    URL::Encode URL::Encode::XS \
+    Pod::ProjectDocs \
+    DBD::Mock \
+    Devel::Cover Devel::Cover::Report::Coveralls && \
   rm -rf ~/.cpanm && \
   cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
 
@@ -178,9 +136,6 @@ ENV SSMTP_FROMLINE_OVERRIDE YES
 ENV POSTGRES_HOST postgres
 ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
-
-# Upgrade npm from v6 provided by buster
-RUN npm install -g npm@7.14.0
 
 COPY start.sh /usr/local/bin/start.sh
 
