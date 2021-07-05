@@ -1,7 +1,6 @@
 name: Docker Image CI
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - 'master'
@@ -33,6 +32,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
     - name: Build and push to Docker Hub
       uses: whoan/docker-build-with-cache-action@v5
       with:
