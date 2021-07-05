@@ -1,12 +1,14 @@
 name: Docker Image CI
 
 on:
+  workflow_dispatch:
   push:
-    branches:
+    branches-ignore:
       - 'master'
   pull_request:
     branches:
       - 'master'
+    types: [ opened, synchronize, closed ]
   repository_dispatch:
     types: [master-updated]
 
