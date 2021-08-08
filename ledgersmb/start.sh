@@ -32,7 +32,7 @@ PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
 export PERL5OPT
 
 if [[ -x .local/start.sh ]]
-   .local/start.sh
+   source .local/start.sh
 fi
 
 exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib --port 5762 $psgi_app
