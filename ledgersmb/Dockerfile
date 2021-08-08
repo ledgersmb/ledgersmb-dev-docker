@@ -52,6 +52,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     texlive-xetex fonts-liberation \
     lsb-release \
     git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
+    default-jre-headless \
     ssh tar gzip graphviz \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
     libtest2-suite-perl libfile-mimeinfo-perl libhtml-lint-perl \
