@@ -32,6 +32,7 @@ PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
 export PERL5OPT
 
 if [[ -x .local/start.sh ]]
+then
    source .local/start.sh
 fi
 
