@@ -65,6 +65,7 @@ services:
       - LSMB_TEST_DB=1
       - LSMB_NEW_DB=lsmb_test
       - COA_TESTING=1
+      - REMOTE_SERVER_PORT=4444
       - REMOTE_SERVER_ADDR=selenium
       - BROWSER=${BROWSER:-chrome}
       - PGHOST=postgres
