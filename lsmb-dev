@@ -57,9 +57,10 @@ show_result() {
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
 	======================================
-	host:  http://${IpAddr_host}:${HostPort}
-	proxy: http://${IpAddr_proxy}
-	psgi:  http://${IpAddr_lsmb}:5762
+	host         : http://${IpAddr_host}:${HostPort}
+	psgi         : http://${IpAddr_lsmb}:5762
+	proxy (login): http://${IpAddr_proxy}/login.pl
+	proxy (setup): http://${IpAddr_proxy}/setup.pl
 	======================================
 	== Postgres Database can be accessed at
 	======================================
