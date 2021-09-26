@@ -9,17 +9,13 @@ LABEL       maintainer="Freelock john@freelock.com"
 
 # 'master' and common dependency install:
 
-RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
+RUN set -x ; \
+  echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
        >> /etc/apt/apt.conf && \
-  echo "deb http://http.debian.net/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
   DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
-                                      wget gnupg2 && \
-  curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
-  bash ./setup && rm ./setup && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y upgrade && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install \
+                                      wget gnupg2 eatmydata && \
+  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install \
     gnupg lsb-release \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
@@ -50,8 +46,7 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libclass-c3-xs-perl liblocale-codes-perl \
     texlive-latex-recommended texlive-fonts-recommended \
     texlive-xetex fonts-liberation \
-    lsb-release \
-    git cpanminus make gcc nodejs libperl-dev lsb-release libcarp-always-perl \
+    git cpanminus make gcc nodejs libperl-dev libcarp-always-perl \
     default-jre-headless \
     ssh tar gzip graphviz \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
@@ -62,34 +57,41 @@ RUN echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
     libmodule-install-perl python3-setuptools libdist-zilla-perl \
     python3-pip python3-wheel python3-urllib3 && \
-  pip3 install transifex-client && \
-  pip3 install --upgrade urllib3 && \
-  npm install -g uglify-js@">=2.0 <3.0" && \
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+  eatmydata pip3 install transifex-client && \
+  eatmydata pip3 install --upgrade urllib3
+
+
+RUN set -x ; \
+  curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
+  bash ./setup && rm ./setup && \
+  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install nodejs && \
+  eatmydata npm install -g uglify-js@">=2.0 <3.0"
+
+RUN cat /etc/os-release ; \
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install postgresql-client
+  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y update && \
+  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install postgresql-client
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y -t sid install postgresql-autodoc
+#  echo "deb http://deb.debian.org/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
+# RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y -t sid install postgresql-autodoc
 
 # Additional (testing) dependencies up to and including 1.9
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
+RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
 
 
 # Additional dependency up to and including 1.7
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libmime-lite-perl
+RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libmime-lite-perl
 
 # Additional dependency up to and including 1.5
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
+RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
 
 # Additional dependency up to and including 1.6
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
+RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
 
 
-# we need at least npm 7.x for our code base; Node 12.x comes with npm 6.x...
-RUN npm install -g npm
 
 #RUN git clone https://github.com/cbbrowne/autodoc.git && \
 #  cd autodoc && \
@@ -102,11 +104,12 @@ ARG CACHEBUST
 
 
 # Install LedgerSMB
-RUN cd /srv && \
+RUN set -x ; \
+  cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
   git remote update && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-images \
@@ -116,7 +119,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.5 origin/1.5 && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
@@ -124,7 +127,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.6 origin/1.6 && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
@@ -132,7 +135,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.7 origin/1.7 && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
@@ -140,7 +143,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.8 origin/1.8 && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
@@ -148,7 +151,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   git checkout -b 1.9 origin/1.9 && \
-  cpanm --quiet --notest \
+  eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-ps \
@@ -156,7 +159,7 @@ RUN cd /srv && \
     --with-feature=edi \
     --installdeps . && \
   make dojo && \
-  cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
+  eatmydata cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
   cpanm --quiet --notest Pod::ProjectDocs && \
   cpanm --quiet --notest DBD::Mock && \
   cpanm --quiet --notest Devel::Cover && \
@@ -179,9 +182,6 @@ ENV SSMTP_FROMLINE_OVERRIDE YES
 ENV POSTGRES_HOST postgres
 ENV POSTGRES_PORT 5432
 ENV DEFAULT_DB lsmb
-
-# Upgrade npm from v6 provided by buster
-RUN npm install -g npm@7.14.0
 
 COPY start.sh /usr/local/bin/start.sh
 
