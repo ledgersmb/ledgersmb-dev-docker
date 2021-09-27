@@ -27,7 +27,7 @@ fi
 PERL5LIB=lib
 export PERL5LIB
 
-make dojo
+[ ! "$(ls -A /srv/ledgersmb/UI/js)" ] && make dojo
 
 # start ledgersmb
 PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
