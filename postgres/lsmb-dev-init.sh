@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-pgdata=${PGDATA:-/var/lib/postgresql/data}
+pgdata=${PGDATA:-/var/lib/postgresql/data/pgdata}
 
 sed -i -e "
 s/^#fsync = on/fsync = off/;
