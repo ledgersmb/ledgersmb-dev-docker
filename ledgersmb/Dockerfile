@@ -1,3 +1,5 @@
+ARG branches="1.6,1.7,1.8,1.9,master"
+
 FROM        debian:bullseye
 LABEL       maintainer="Freelock john@freelock.com"
 
@@ -9,14 +11,17 @@ LABEL       maintainer="Freelock john@freelock.com"
 
 # 'master' and common dependency install:
 
+# make Apt non-interactive
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN set -x ; \
   echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
        >> /etc/apt/apt.conf && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" apt-get -y install curl ca-certificates \
-                                      wget gnupg2 eatmydata && \
-  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install \
-    gnupg lsb-release \
+  apt-get -y update && \
+  apt-get -y install curl ca-certificates \
+                     wget gnupg eatmydata && \
+  eatmydata apt-get -y install \
+    lsb-release \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
     libdatetime-perl libdatetime-format-strptime-perl \
@@ -46,7 +51,7 @@ RUN set -x ; \
     libclass-c3-xs-perl liblocale-codes-perl \
     texlive-latex-recommended texlive-fonts-recommended \
     texlive-xetex fonts-liberation \
-    git cpanminus make gcc nodejs libperl-dev libcarp-always-perl \
+    git cpanminus make gcc libperl-dev libcarp-always-perl \
     default-jre-headless \
     ssh tar gzip graphviz \
     gettext procps libtap-parser-sourcehandler-pgtap-perl \
@@ -64,32 +69,32 @@ RUN set -x ; \
 RUN set -x ; \
   curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
   bash ./setup && rm ./setup && \
-  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install nodejs && \
+  eatmydata apt-get -y install nodejs && \
   eatmydata npm install -g uglify-js@">=2.0 <3.0"
 
 RUN cat /etc/os-release ; \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
-  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y update && \
-  DEBIAN_FRONTEND="noninteractive" eatmydata apt-get -y install postgresql-client
+  eatmydata apt-get -y update && \
+  eatmydata apt-get -y install postgresql-client
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
 #  echo "deb http://deb.debian.org/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
-# RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y -t sid install postgresql-autodoc
+# RUN eatmydata apt-get -y -t sid install postgresql-autodoc
 
 # Additional (testing) dependencies up to and including 1.9
-RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
+RUN eatmydata apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
 
 
 # Additional dependency up to and including 1.7
-RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libmime-lite-perl
+RUN eatmydata apt-get -y install libmime-lite-perl
 
 # Additional dependency up to and including 1.5
-RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
+RUN eatmydata apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
 
 # Additional dependency up to and including 1.6
-RUN DEBIAN_FRONTEND=noninteractive eatmydata apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
+RUN eatmydata apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
 
 
 
@@ -108,8 +113,16 @@ RUN set -x ; \
   cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
-  git remote update && \
-  eatmydata cpanm --quiet --notest \
+  git remote update
+
+# FROM resets ARG, so redeclare
+ARG branches
+
+RUN cd /srv/ledgersmb && \
+  bash -c 'for branch in ${branches//,/ }; do \
+    cd /srv/ledgersmb && \
+    git checkout $branch && \
+    eatmydata cpanm --quiet --notest \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-images \
@@ -117,53 +130,14 @@ RUN set -x ; \
     --with-feature=openoffice \
     --with-feature=xls \
     --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.5 origin/1.5 && \
-  eatmydata cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.6 origin/1.6 && \
-  eatmydata cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.7 origin/1.7 && \
-  eatmydata cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.8 origin/1.8 && \
-  eatmydata cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
-  git checkout -b 1.9 origin/1.9 && \
-  eatmydata cpanm --quiet --notest \
-    --with-develop \
-    --with-feature=starman \
-    --with-feature=latex-pdf-ps \
-    --with-feature=openoffice \
-    --with-feature=edi \
-    --installdeps . && \
+    --installdeps . ; \
+  done' && \
   make dojo && \
-  eatmydata cpanm --quiet --notest Dancer2 Dancer2::Session::Cookie Dancer2::Plugin::Auth::Extensible URL::Encode URL::Encode::XS && \
-  cpanm --quiet --notest Pod::ProjectDocs && \
-  cpanm --quiet --notest DBD::Mock && \
-  cpanm --quiet --notest Devel::Cover && \
-  cpanm --quiet --notest Devel::Cover::Report::Coveralls && \
+  eatmydata cpanm --quiet --notest \
+    URL::Encode URL::Encode::XS \
+    Pod::ProjectDocs \
+    DBD::Mock \
+    Devel::Cover Devel::Cover::Report::Coveralls && \
   rm -rf ~/.cpanm && \
   cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
 
