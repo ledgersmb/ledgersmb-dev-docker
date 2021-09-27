@@ -132,7 +132,6 @@ RUN cd /srv/ledgersmb && \
     --with-feature=edi \
     --installdeps . ; \
   done' && \
-  make dojo && \
   eatmydata cpanm --quiet --notest \
     URL::Encode URL::Encode::XS \
     Pod::ProjectDocs \

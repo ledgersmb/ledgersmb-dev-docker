@@ -27,6 +27,8 @@ fi
 PERL5LIB=lib
 export PERL5LIB
 
+make dojo
+
 # start ledgersmb
 PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
 export PERL5OPT
