@@ -172,6 +172,10 @@ EXPOSE 5762
 RUN chown www-data /srv/ledgersmb
 USER www-data
 
+# Allow ledgersmb-admin to work
+ENV PERL5LIB="lib:old/lib"
+ENV PATH="/srv/ledgersmb/bin:${PATH}"
+
 WORKDIR /srv/ledgersmb
 
 CMD ["start.sh"]

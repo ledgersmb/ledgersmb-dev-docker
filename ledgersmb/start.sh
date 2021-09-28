@@ -23,10 +23,6 @@ else
    psgi_app=/srv/ledgersmb/tools/starman.psgi
 fi
 
-# Allow ledgersmb-admin to work
-PERL5LIB=lib
-export PERL5LIB
-
 [ ! "$(ls -A /srv/ledgersmb/UI/js)" ] && make dojo
 
 # start ledgersmb
