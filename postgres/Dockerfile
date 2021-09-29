@@ -1,5 +1,5 @@
 FROM        postgres:12
-MAINTAINER  LedgerSMB  devel@lists.ledgersmb.org
+LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
     apt-get -y install postgresql-12-pgtap && \
