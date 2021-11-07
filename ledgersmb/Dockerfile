@@ -122,7 +122,7 @@ RUN cd /srv/ledgersmb && \
   bash -c 'for branch in ${branches//,/ }; do \
     cd /srv/ledgersmb && \
     git checkout $branch && \
-    eatmydata cpanm --quiet --notest \
+    eatmydata cpanm --quiet --notest --metacpan \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-images \
