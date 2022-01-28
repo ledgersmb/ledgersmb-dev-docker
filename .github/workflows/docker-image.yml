@@ -5,53 +5,77 @@ on:
   push:
     branches:
       - 'master'
-  pull_request:
-    branches:
-      - 'master'
-  repository_dispatch:
-    types: [master-updated]
+
+
+env:
+  REGISTRY: ghcr.io
 
 jobs:
   ledgersmb:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Build and push to Docker Hub
-      uses: whoan/docker-build-with-cache-action@v5
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
+        registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.DOCKER_TOKEN }}
-        image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-lsmb
-        image_tag: latest
-        context: ledgersmb
-        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-        pull_image_and_stages: false
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: ledgersmb/
+        push: true
+        tags: ledgersmb/dev-ledgersmb:latest
+
   proxy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Build and push to Docker Hub
-      uses: whoan/docker-build-with-cache-action@v5
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
+        registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.DOCKER_TOKEN }}
-        image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-nginx
-        image_tag: latest
-        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-        context: nginx
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: nginx/
+        push: true
+        tags: ledgersmb/dev-nginx:latest
+
   postgres:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Build and push to Docker Hub
-      uses: whoan/docker-build-with-cache-action@v5
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
+        registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.DOCKER_TOKEN }}
-        image_name: ${{ github.repository_owner }}dev/ledgersmb-dev-postgres
-        image_tag: latest
-        push_git_tag: ${{ github.event_name == 'push' || github.event.pull_request.merged }}
-        context: postgres
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: postgres/
+        push: true
+        tags: ledgersmb/dev-postgres:latest
