@@ -32,7 +32,7 @@ jobs:
       with:
         context: ledgersmb/
         push: true
-        tags: ledgersmb/dev-ledgersmb:latest
+        tags: ${{ env.REGISTRY }}/ledgersmb/dev-ledgersmb:latest
 
   proxy:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
       with:
         context: nginx/
         push: true
-        tags: ledgersmb/dev-nginx:latest
+        tags: ${{ env.REGISTRY }}/ledgersmb/dev-nginx:latest
 
   postgres:
     runs-on: ubuntu-latest
@@ -78,4 +78,4 @@ jobs:
       with:
         context: postgres/
         push: true
-        tags: ledgersmb/dev-postgres:latest
+        tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:latest
