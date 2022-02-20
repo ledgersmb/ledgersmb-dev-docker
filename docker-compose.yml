@@ -17,7 +17,7 @@ services:
       - internal
 
   db:
-    image: ledgersmbdev/ledgersmb-dev-postgres
+    image: ghcr.io/ledgersmb/dev-postgres
     hostname: db
     container_name: ${COMPOSE_PROJECT_NAME}_db
     environment:
@@ -37,7 +37,7 @@ services:
       - selenium
       - mailhog
     user: "${USER}"
-    image: ${LSMB_IMAGE:-ledgersmbdev/ledgersmb-dev-lsmb}
+    image: ${LSMB_IMAGE:-ghcr.io/ledgersmb/dev-ledgersmb}
     hostname: lsmb
     container_name: ${COMPOSE_PROJECT_NAME}_lsmb
     links:
@@ -79,7 +79,7 @@ services:
       - grid
 
   proxy:
-    image: ledgersmbdev/ledgersmb-dev-nginx
+    image: ghcr.io/ledgersmb/dev-nginx
     hostname: ${COMPOSE_PROJECT_NAME}_proxy
     container_name: ${COMPOSE_PROJECT_NAME}_proxy
     depends_on:
