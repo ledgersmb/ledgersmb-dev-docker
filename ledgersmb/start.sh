@@ -23,8 +23,6 @@ else
    psgi_app=/srv/ledgersmb/tools/starman.psgi
 fi
 
-[ ! "$(ls -A /srv/ledgersmb/UI/js)" ] && make dojo
-
 # start ledgersmb
 PERL5OPT="$PERL5OPT $HARNESS_PERL_SWITCHES"
 export PERL5OPT
@@ -34,4 +32,6 @@ then
    source .local/start.sh
 fi
 
-exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib --port 5762 $psgi_app
+exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib \
+      -R /srv/ledgersmb/lib,/srv/ledgersmb/old/lib,/srv/ledgersmb/workflows,/srv/ledgersmb/ledgersmb.conf,/srv/ledgersmb/ledgersmb.logging \
+      --port 5762 $psgi_app
