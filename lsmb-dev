@@ -69,7 +69,7 @@ show_result() {
 	======================================
 	== Postgres Database can be accessed at
 	======================================
-	db:  http://${IpAddr_host}:${DBPort}
+	db:  ${IpAddr_host}:${DBPort}
 	======================================
 
 	EOF

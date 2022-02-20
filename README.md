@@ -5,16 +5,16 @@ and test environment for LedgerSMB.
 
 The infrastructure is based on the `ledgersmbdev/ledgersmb-dev-postgres`,
 `ledgersmbdev/ledgersmb-dev-nginx` and `ledgersmbdev/ledgersmb-dev-lsmb`
-LedgerSMB containers, the `wernight/phantomjs`
-selenium tester container and the `mailhog/mailhog` mail testing tool.
+LedgerSMB containers, the selenium tester containers and the
+`mailhog/mailhog` mail testing tool.
 
 The ledgersmb-dev-postgres container is derived from the standard
 postgres container, adding the `pgTAP` test infrastructure and setting
 aggressive database performance optimizations to help speed up testing.
 
 The ledgersmb-dev-lsmb container holds everything required to run and
-test LedgerSMB. This container currently supports versions 1.5, 1.6, 1.7,
-1.8 and master -- the image gets updated regularly to include dependencies
+test LedgerSMB. This container currently supports versions 1.6, 1.7,
+1.8, 1.9 and master -- the image gets updated regularly to include dependencies
 for specific feature branches.
 
 # Prerequisites
@@ -46,11 +46,11 @@ db:  http://host:45632
 
 Ten containers are created:
 
-* `ldmaster_db_1`
-* `ldmaster_lsmb_1`
-* `ldmaster_mailhog_1`
-* `ldmaster_proxy_1`
-* `ldmaster_selenium_1`
+* `ldmaster_db`
+* `ldmaster_lsmb`
+* `ldmaster_mailhog`
+* `ldmaster_proxy`
+* `ldmaster_selenium`
 * `ldmaster_chrome_1`
 * `ldmaster_chrome_2`
 * `ldmaster_chrome_3`
@@ -58,7 +58,7 @@ Ten containers are created:
 * `ldmaster_chrome_5`
 
 The `LedgerSMB` directory is mapped to the `/srv/ledgersmb` directory
-inside the `ldmaster_lsmb_1` and `ldmaster_proyxy_1` containers. The
+inside the `ldmaster_lsmb` and `ldmaster_proyxy` containers. The
 database container creates its database storage on a "RAM drive",
 meaning that restarting the container causes all existing databases
 to be flushed.
@@ -141,16 +141,16 @@ $ make test TESTS=t/01-load.t
 ```
 
 The combination of the `lsmb-dev` command and the use of `make` takes care
-of making sure the tests are being run inside the `ldmaster_lsmb_1` docker
+of making sure the tests are being run inside the `ldmaster_lsmb` docker
 container.
 
 ## Restarting LedgerSMB after making (Perl) edits
 
-It's best to restart the single `ldmaster_lsmb_1` container using Docker
+It's best to restart the single `ldmaster_lsmb` container using Docker
 directly by running
 
 ```bash
-$ docker restart ldmaster_lsmb_1
+$ docker restart ldmaster_lsmb
 ```
 
 Although the command `../ldd/lsmb-dev master restart` works, it usually
@@ -195,12 +195,12 @@ $ ../ldd/lsmb-dev 18 pull
 $ BROWSER=firefox ../ldd/lsmb-dev 18 up -d
 ```
 This creates 10 additional containers:
-* `ld18_db_1`
-* `ld18_lsmb_1`
-* `ld18_selenium_1`
-* `ld18_mailhog_1`
-* `ld18_proxy_1`
-* `ld18_selenium_1`
+* `ld18_db`
+* `ld18_lsmb`
+* `ld18_selenium`
+* `ld18_mailhog`
+* `ld18_proxy`
+* `ld18_selenium`
 * `ld18_firefox_1`
 * `ld18_firefox_2`
 * `ld18_firefox_3`
