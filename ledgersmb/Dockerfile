@@ -1,7 +1,8 @@
-ARG branches="1.6,1.7,1.8,1.9,master"
-
 FROM        debian:bullseye
 LABEL       maintainer="Freelock john@freelock.com"
+
+ARG         DEBIAN_FRONTEND=noninteractive
+ARG         branches="1.6,1.7,1.8,1.9,master"
 
 
 # Install Perl, Tex, Starman, psql client, and all dependencies
@@ -12,7 +13,6 @@ LABEL       maintainer="Freelock john@freelock.com"
 # 'master' and common dependency install:
 
 # make Apt non-interactive
-ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -x ; \
   echo -n "APT::Install-Recommends \"0\";\nAPT::Install-Suggests \"0\";\n" \
@@ -113,12 +113,6 @@ RUN set -x ; \
   cd /srv && \
   git clone -b master https://github.com/ledgersmb/LedgerSMB.git ledgersmb && \
   cd ledgersmb && \
-  git remote update
-
-# FROM resets ARG, so redeclare
-ARG branches
-
-RUN cd /srv/ledgersmb && \
   bash -c 'for branch in ${branches//,/ }; do \
     cd /srv/ledgersmb && \
     git checkout $branch && \
@@ -137,8 +131,7 @@ RUN cd /srv/ledgersmb && \
     Pod::ProjectDocs \
     DBD::Mock \
     Devel::Cover Devel::Cover::Report::Coveralls && \
-  rm -rf ~/.cpanm && \
-  cd ~/ && rm -rf ledgersmb && mkdir ledgersmb
+  cd /srv && rm -rf ~/.cpanm ledgersmb && mkdir ledgersmb
 
 # Configure outgoing mail to use host, other run time variable defaults
 
