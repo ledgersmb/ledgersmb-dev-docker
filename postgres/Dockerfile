@@ -1,5 +1,8 @@
 ARG PGBASE=latest
 FROM        postgres:$PGBASE
+
+# Announce we want to re-use PGBASE
+ARG PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
