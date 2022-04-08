@@ -1,4 +1,5 @@
-FROM        postgres:14
+ARG PGBASE=postgres:latest
+FROM        $PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
