@@ -59,6 +59,9 @@ jobs:
 
   postgres:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pg_version: [ "latest", "14", "13", "12" ]
     permissions:
       contents: read
       packages: write
@@ -76,6 +79,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
+        "build-args": |
+          PGBASE:${{ matrix.pg_version }}
         context: postgres/
         push: true
-        tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:latest
+        tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:${{ matrix.pg_version }}
