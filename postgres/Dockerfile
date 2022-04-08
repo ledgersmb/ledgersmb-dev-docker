@@ -1,4 +1,4 @@
-FROM        postgres:12
+FROM        postgres:14
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
