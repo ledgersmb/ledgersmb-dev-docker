@@ -55,9 +55,20 @@ is_container_running() {
 }
 
 show_result() {
-    if is_container_running; then
-        cat <<-EOF
+    local DBPort
+    local HostPort
+    local IpAddr_host
+    local IpAddr_proxy
+    local IpAddr_lsmb
 
+    # report the IP address in the form of URLs
+    DBPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_db"`
+    HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
+    IpAddr_host=`hostname`
+    IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
+    IpAddr_lsmb=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_lsmb"`
+
+    cat <<-EOF
 	======================================
 	== LedgerSMB '$CurrentBranch'
 	== should be available at
@@ -73,11 +84,6 @@ show_result() {
 	======================================
 
 	EOF
-        return 0
-    else
-        show_logs
-        return 9
-    fi
 }
 
 # Check we are actually in a LedgerSMB repo
@@ -106,6 +112,14 @@ fi
 SCALE=""
 if test "$1" = "up" ; then
     SCALE="--scale $BROWSER=$BROWSERS_COUNT"
+elif test "$1" = "status" ; then
+    if is_container_running ; then
+        show_result
+        exit 0
+    else
+        echo "No container running"
+        exit 1
+    fi
 fi
 
 # generate and start the containers
@@ -119,14 +133,11 @@ if test "$1" = "start" -o "$1" = "restart" -o "$1" = "up" ; then
   # don't try to report the ip and url if the command is one of
   # pull, rm, stop,
 
-  # report the IP address in the form of URLs
-  DBPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_db"`
-  HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
-  IpAddr_host=`hostname`
-  IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
-  IpAddr_lsmb=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_lsmb"`
-
-  show_result
+  if is_container_running; then
+      show_result
+  else
+      show_logs
+  fi
 elif test "$1" = "rm"; then
   # Remove networks
   docker network rm ${COMPOSE_PROJECT_NAME}_default
