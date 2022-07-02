@@ -56,13 +56,17 @@ is_container_running() {
 
 show_result() {
     local DBPort
+    local MailHogPort
     local HostPort
+    local HostDevPort
     local IpAddr_host
     local IpAddr_proxy
     local IpAddr_lsmb
 
     # report the IP address in the form of URLs
     DBPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_db"`
+    MailHogPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "8025/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_mailhog"`
+    HostDevPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "9000/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_lsmb"`
     HostPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_proxy"`
     IpAddr_host=`hostname`
     IpAddr_proxy=`docker inspect -f "{{.NetworkSettings.Networks.${COMPOSE_PROJECT_NAME}_default.IPAddress}}" "${COMPOSE_PROJECT_NAME}_proxy"`
@@ -74,6 +78,8 @@ show_result() {
 	== should be available at
 	======================================
 	host         : http://${IpAddr_host}:${HostPort}
+	host_dev     : http://${IpAddr_host}:${HostDevPort}
+	mailhog      : http://${IpAddr_host}:${MailHogPort}
 	psgi         : http://${IpAddr_lsmb}:5762
 	proxy (login): http://${IpAddr_proxy}/login.pl
 	proxy (setup): http://${IpAddr_proxy}/setup.pl

@@ -17,12 +17,12 @@ test LedgerSMB. This container currently supports versions 1.6, 1.7,
 1.8, 1.9 and master -- the image gets updated regularly to include dependencies
 for specific feature branches.
 
-# Prerequisites
+## Prerequisites
 
 Apart from the obvious (docker, docker-compose), this project expects
 a LedgerSMB Git repository to exist in the current directory.
 
-# Getting started (from scratch)
+## Getting started (from scratch)
 
 ```sh
 $ git clone https://github.com/ledgersmb/LedgerSMB.git
@@ -34,9 +34,12 @@ $ ../ldd/lsmb-dev master up -d
 == LedgerSMB 'master'
 == should be available at
 ======================================
-host:  http://host:32452
-proxy: http://172.29.0.4
-psgi:  http://172.29.0.3:5762
+host:          http://host:32452
+host_dev:      http://host:31845
+mailhog:       http://host:41233
+psgi:          http://172.29.0.3:5762
+proxy (login): http://172.22.0.5/login.pl
+proxy (setup): http://172.22.0.5/setup.pl
 ======================================
 == Postgres Database can be accessed at
 ======================================
@@ -58,7 +61,7 @@ Ten containers are created:
 * `ldmaster_chrome_5`
 
 The `LedgerSMB` directory is mapped to the `/srv/ledgersmb` directory
-inside the `ldmaster_lsmb` and `ldmaster_proyxy` containers. The
+inside the `ldmaster_lsmb` and `ldmaster_proxy` containers. The
 database container creates its database storage on a "RAM drive",
 meaning that restarting the container causes all existing databases
 to be flushed.
@@ -66,40 +69,53 @@ to be flushed.
 A Selenium grid is created with a hub and 5 copies of the browser you selected,
 Chrome is set per default. Firefox and Opera are supported.
 
-## Creating JavaScript output
+### Creating JavaScript output
 
 To use the web-app, a "transpiled" version of the JavaScript code must
 be available in the `UI/js/` directory. This is created from `UI/js-src/`
 by running
 
 ```bash
-$ make dojo
+make dojo
 ```
 
 After editing the code in `UI/js-src/`, this command needs to be re-run.
 
-## Accessing LedgerSMB
+### Accessing LedgerSMB
 
 As per the example above, you should be able to browse to your host at
-http://host:32452/setup.pl if you want to go through the proxy or at
-http://172.20.0.6/setup.pl to to go directly and create a test database.
+<http://host:32452/setup.pl> if you want to go through the proxy or at
+<http://172.20.0.6/setup.pl> to to go directly and create a test database.
 The default password of the `postgres` user is `abc`.
 
 Similarly, when a test company exists, browsing to
-http://172.20.0.6/login.pl allows to log into the company.
+<http://172.20.0.6/login.pl> allows to log into the company.
 
-The postgres database is made available at http://host:45632 on the example
+The postgres database is made available at <http://host:45632> on the example
 above, should you want to browse it.
 
 All host ports are assigned randomly on available ports to not clash with the
 host but this can be overriden
 
-## Environment variables
+LedgerSMB offers the possibility to run in development mode, where you can
+see the modifications done in the user interface code be installed and shown
+in realtime.
+
+This is started with the command:
+
+* `npm run serve`\
+   Runs the realtime user interface compiler.
+
+And you can then use a browser to browse your host in development mode
+at <http://host:31845>, <http://host:31845/login.pl> or <http://host:31845/setup.pl>.
+
+### Environment variables
 
 Defaults can be overriden by setting environment variables. By default,
 `.local/.env` is read if available at container startup for local overrides and
 can contain the following:
-```
+
+```sh
 # Set local defaults for environment variables
 
 # Database user and password
@@ -117,12 +133,15 @@ export HOME_DEV=../LedgerSMB/.local/home
 
 # Uncomment to fix host ports used
 # export LSMB_PORT=5000
+# export LSMB_PORT_DEV=9000
 # export DB_PORT=5432
+# export MAILHOG_PORT=8025
 
 # Uncomment to use a customized ledgersmb-dev-test image.
 # export LSMB_IMAGE=user/ledgersmb-dev-test:latest
 ```
-## Running tests
+
+### Running tests
 
 Three commands exist to run tests:
 
@@ -137,20 +156,20 @@ The set of tests to be run can be restricted using the `TESTS` Makefile
 variable:
 
 ```bash
-$ make test TESTS=t/01-load.t
+make test TESTS=t/01-load.t
 ```
 
 The combination of the `lsmb-dev` command and the use of `make` takes care
 of making sure the tests are being run inside the `ldmaster_lsmb` docker
 container.
 
-## Restarting LedgerSMB after making (Perl) edits
+### Restarting LedgerSMB after making (Perl) edits
 
 It's best to restart the single `ldmaster_lsmb` container using Docker
 directly by running
 
 ```bash
-$ docker restart ldmaster_lsmb
+docker restart ldmaster_lsmb
 ```
 
 Although the command `../ldd/lsmb-dev master restart` works, it usually
@@ -181,20 +200,22 @@ volumes:
 #      device: tmpfs
 ```
 
-## Multiple parallel test environments
+### Multiple parallel test environments
 
 Multiple test environments, based on multiple clones, can be created
 using a different first-argument to the `lsmb-dev` script. E.g. a
 1.8 testing environment can be created using:
 
 ```sh
-$ git clone -b 1.8 https://github.com/ledgersmb/LedgerSMB.git
-$ git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
-$ cd LedgerSMB
-$ ../ldd/lsmb-dev 18 pull
-$ BROWSER=firefox ../ldd/lsmb-dev 18 up -d
+git clone -b 1.8 https://github.com/ledgersmb/LedgerSMB.git
+git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
+cd LedgerSMB
+../ldd/lsmb-dev 18 pull
+BROWSER=firefox ../ldd/lsmb-dev 18 up -d
 ```
+
 This creates 10 additional containers:
+
 * `ld18_db`
 * `ld18_lsmb`
 * `ld18_selenium`
@@ -207,8 +228,7 @@ This creates 10 additional containers:
 * `ld18_firefox_4`
 * `ld18_firefox_5`
 
-
-# DB (PostgreSQL)
+## DB (PostgreSQL)
 
 Please note that the database container patches the PostgreSQL configuration
 for faster test performance rather than the reliability levels you'd want
@@ -216,8 +236,7 @@ for your production environment (that is, data consistency isn't fully
 guaranteed on outage, which shouldn't be a problem for tests -- we'll simply
 re-run them -- but isn't a risk to be taken in production).
 
-
-# MailHog
+## MailHog
 
 The default configuration, all mail sent from ledgersmb is 'caught' by
 [MailHog](https://github.com/mailhog/MailHog). This allows e-mail
@@ -230,9 +249,7 @@ them.
 The `mailhog/mailhog` container serves the web API on port 8025 and accepts
 SMTP connections on port 1025.
 
-
-
-# Development and testing against different perl versions
+## Development and testing against different perl versions
 
 A script is provided to help create docker images using different Perl
 versions. These are based on the
@@ -243,7 +260,7 @@ behaviour.
 Running:
 
 ```sh
-   $ ./tools/make_perl_context [perl version]
+   ./tools/make_perl_context [perl version]
 ```
 
 Will create a new docker context for the specified perl version, from

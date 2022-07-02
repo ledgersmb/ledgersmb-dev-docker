@@ -3,7 +3,7 @@ version: "3.2"
 networks:
   internal:
     driver: bridge
-    internal: yes
+    internal: true
 
 services:
   mailhog:
@@ -12,9 +12,11 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_mailhog
     expose:
       - 1025
-      - 8025
+    ports:
+      - ${MAILHOG_PORT:0}:8025
     networks:
       - internal
+      - default
 
   db:
     image: ghcr.io/ledgersmb/dev-postgres
@@ -43,6 +45,8 @@ services:
     links:
       - "db:postgres"
       - selenium
+    ports:
+      - ${LSMB_PORT_DEV:-0}:9000
     volumes:
       - type: bind
         target: /srv/ledgersmb
