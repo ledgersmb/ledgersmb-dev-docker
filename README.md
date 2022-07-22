@@ -34,17 +34,18 @@ $ ../ldd/lsmb-dev master up -d
 == LedgerSMB 'master'
 == should be available at
 ======================================
-host:          http://host:32452
-host_dev:      http://host:31845
-mailhog:       http://host:41233
-psgi:          http://172.29.0.3:5762
-proxy (login): http://172.22.0.5/login.pl
-proxy (setup): http://172.22.0.5/setup.pl
+host         : http://host:49154
+mailhog      : http://172.28.0.3:8025
+psgi         : http://172.28.0.4:5762
+proxy (login): http://172.28.0.5/login.pl
+proxy (setup): http://172.28.0.5/setup.pl
+dev (login)  : http://172.28.0.4:9000/login.pl
+dev (setup)  : http://172.28.0.4:9000/setup.pl
 ======================================
 == Postgres Database can be accessed at
 ======================================
-db:  host:45632
-db:  db:5432
+db:  host:49158
+db:  172.28.0.2:5432
 ======================================
 ```
 
