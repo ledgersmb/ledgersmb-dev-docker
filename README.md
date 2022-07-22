@@ -76,7 +76,7 @@ be available in the `UI/js/` directory. This is created from `UI/js-src/`
 by running
 
 ```bash
-make dojo
+make js
 ```
 
 After editing the code in `UI/js-src/`, this command needs to be re-run.
