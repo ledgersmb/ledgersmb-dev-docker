@@ -57,9 +57,11 @@ is_container_running() {
 show_result() {
     local DBPort
     local HostPort
+    local IpAddr_db
     local IpAddr_host
-    local IpAddr_proxy
+    local IpAddr_mailhog
     local IpAddr_lsmb
+    local IpAddr_proxy
 
     # report the IP address in the form of URLs
     DBPort=`docker inspect --format='{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "${COMPOSE_PROJECT_NAME}_db"`
