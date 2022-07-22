@@ -33,5 +33,5 @@ then
 fi
 
 exec plackup -I/srv/ledgersmb/lib -I/srv/ledgersmb/old/lib \
-      -R /srv/ledgersmb/lib,/srv/ledgersmb/old/lib,/srv/ledgersmb/workflows,/srv/ledgersmb/ledgersmb.conf,/srv/ledgersmb/ledgersmb.logging \
+      -R /srv/ledgersmb/lib,/srv/ledgersmb/old/lib,/srv/ledgersmb/workflows,/srv/ledgersmb/ledgersmb.conf,/srv/ledgersmb/ledgersmb.logging,/srv/ledgersmb/ledgersmb.yaml \
       --port 5762 $psgi_app
