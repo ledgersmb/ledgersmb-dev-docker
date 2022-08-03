@@ -131,7 +131,15 @@ RUN set -x ; \
     Pod::ProjectDocs \
     DBD::Mock \
     Devel::Cover Devel::Cover::Report::Coveralls && \
-  cd /srv && rm -rf ~/.cpanm ledgersmb && mkdir ledgersmb
+  eatmydata cpanm --quiet --notest \
+    HTML::Template Term::ReadKey ; \
+  cd /srv && rm -rf ~/.cpanm ledgersmb && mkdir ledgersmb && \
+  git clone https://github.com/cbbrowne/autodoc.git && \
+  cd autodoc && \
+  make install && \
+  cd /srv && rm -rf autodoc
+# postgresql_autodoc requires DBI and DBD::Pg too, but those are already installed
+
 
 # Configure outgoing mail to use host, other run time variable defaults
 
