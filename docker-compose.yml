@@ -13,7 +13,7 @@ services:
     expose:
       - 1025
     ports:
-      - ${MAILHOG_PORT:0}:8025
+      - ${MAILHOG_PORT:-0}:8025
     networks:
       - internal
       - default
