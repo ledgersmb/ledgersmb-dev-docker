@@ -9,7 +9,7 @@ LedgerSMB containers, the selenium tester containers and the
 `mailhog/mailhog` mail testing tool.
 
 The ledgersmb-dev-postgres container is derived from the standard
-postgres container, adding the `pgTAP` test infrastructure and setting
+Postgres container, adding the `pgTAP` test infrastructure and setting
 aggressive database performance optimizations to help speed up testing.
 
 The ledgersmb-dev-lsmb container holds everything required to run and
@@ -17,37 +17,81 @@ test LedgerSMB. This container currently supports versions 1.6, 1.7,
 1.8, 1.9 and master -- the image gets updated regularly to include dependencies
 for specific feature branches.
 
-## Prerequisites
+## Quick Start Prerequisites
 
-Apart from the obvious (docker, docker-compose), this project expects
-a LedgerSMB Git repository to exist in the current directory.
-
-## Getting started (from scratch)
+The Quick Start shell script below will install everything necessary to develop and test
+LedgerSMB. This script should work with any linux system that has
+`docker` and `make` installed and where the current `$USER` is in the docker group. 
+These prerequisites can be met using the following on Ubuntu:
 
 ```sh
-$ git clone https://github.com/ledgersmb/LedgerSMB.git
-$ git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
-$ cd LedgerSMB
-$ ../ldd/lsmb-dev master pull
-$ ../ldd/lsmb-dev master up -d
-======================================
-== LedgerSMB 'master'
-== should be available at
-======================================
-host         : http://host:49154
-mailhog      : http://172.28.0.3:8025
-psgi         : http://172.28.0.4:5762
-proxy (login): http://172.28.0.5/login.pl
-proxy (setup): http://172.28.0.5/setup.pl
-dev (login)  : http://172.28.0.4:9000/login.pl
-dev (setup)  : http://172.28.0.4:9000/setup.pl
-======================================
-== Postgres Database can be accessed at
-======================================
-db:  host:49158
-db:  172.28.0.2:5432
-======================================
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose make
+sudo usermod -a -G docker $USER
 ```
+
+## Quick Start (from scratch)
+
+The following bash shell script was tested on Ubuntu 22.04. It installs LedgerSMB and runs
+the development test suite.  Details about each step appear below the script.
+
+```sh
+#!/bin/bash
+set -e -x
+
+# Not for use in Production.
+
+# Clone the LedgerSMB git master repository
+git clone https://github.com/ledgersmb/LedgerSMB.git
+
+# Set up LedgerSMB configuration for development
+mkdir LedgerSMB/logs
+mkdir LedgerSMB/screens
+cp LedgerSMB/doc/conf/ledgersmb.conf.default LedgerSMB/ledgersmb.conf
+sed -i -e 's/db_namespace = public/db_namespace = xyz/' LedgerSMB/ledgersmb.conf
+sed -i -e 's/host = localhost/host = postgres/' LedgerSMB/ledgersmb.conf
+
+# Clone the LedgerSMB development docker master repository
+git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
+
+# Start the docker containers
+cd LedgerSMB
+../ldd/lsmb-dev master pull
+../ldd/lsmb-dev master up -d
+
+# Make the runtime javascript (see options below)
+make jsdev # With VUE debugger enabled
+
+# Run the npm server (optional)
+docker exec -t -d ldmaster_lsmb npm run serve
+
+# Run the tests (see options below)
+make devtest       # Single process
+```
+
+Note that this Quick Start script is meant to be run from a new user directory and if run a second time in the same directory will error out.
+
+After the command `../ldd/lsmb-dev master up -d` is executed above you should see output similar to:
+
+```
+-======================================
+-== LedgerSMB 'master'
+-== should be available at
+-======================================
+-host         : http://host:49154
+-mailhog      : http://172.28.0.3:8025
+-psgi         : http://172.28.0.4:5762
+-proxy (login): http://172.28.0.5/login.pl
+-proxy (setup): http://172.28.0.5/setup.pl
+-dev (login)  : http://172.28.0.4:9000/login.pl
+-dev (setup)  : http://172.28.0.4:9000/setup.pl
+-======================================
+-== Postgres Database can be accessed at
+-======================================
+-db:  host:49158
+-db:  172.28.0.2:5432
+-======================================
+```
+Note that without further customization, as described below, the ports are chosen randomly with each container start up. So your ports will likely be different.
 
 Ten containers are created:
 
@@ -73,31 +117,36 @@ Chrome is set per default. Firefox and Opera are supported.
 
 ### Creating JavaScript output
 
-To use the web-app, a "transpiled" version of the JavaScript code must
+A "transpiled" version of the JavaScript code must
 be available in the `UI/js/` directory. This is created from `UI/js-src/`
-by running
+by running either of the two commands shown below.
 
 ```bash
-make js
+make jsdev # With VUE debugger enabled
+```
+or
+
+```bash
+make js  # Without VUE debugger enabled
 ```
 
-After editing the code in `UI/js-src/`, this command needs to be re-run.
+After editing the code in `UI/js-src/`, one of these commands needs to be re-run.
 
 ### Accessing LedgerSMB
 
 As per the example above, you should be able to browse to your host at
 <http://host:32452/setup.pl> if you want to go through the proxy or at
-<http://172.20.0.6/setup.pl> to to go directly and create a test database.
+<http://172.20.0.6/setup.pl> to go directly and create a test database.
 The default password of the `postgres` user is `abc`.
 
-Similarly, when a test company exists, browsing to
+Similarly, after you create a test company using `setup.pl`, browsing to
 <http://172.20.0.6/login.pl> allows to log into the company.
 
-The postgres database is made available at <http://host:45632> on the example
+The Postgres database is made available at <http://host:45632> on the example
 above, should you want to browse it.
 
 All host ports are assigned randomly on available ports to not clash with the
-host but this can be overriden
+host but this can be overridden
 
 LedgerSMB offers the possibility to run in development mode, where you can
 see the modifications done in the user interface code be installed and shown
@@ -105,17 +154,19 @@ in realtime.
 
 This is started with the command:
 
-* `npm run serve`\
-   Runs the realtime user interface compiler.
+```sh
+# Runs the realtime user interface compiler
+docker exec -t -d ldmaster_lsmb npm run serve
+```
 
 And you can then use a browser to browse your host in development mode
 at <http://host:31845>, <http://host:31845/login.pl> or <http://host:31845/setup.pl>.
 
 ### Environment variables
 
-Defaults can be overriden by setting environment variables. By default,
-`.local/.env` is read if available at container startup for local overrides and
-can contain the following:
+Defaults can be overridden by setting environment variables. By default,
+`.local/.env` in the LedgerSMB repository clone is read if available at container startup. 
+Local overrides and can contain the following:
 
 ```sh
 # Set local defaults for environment variables
@@ -147,23 +198,40 @@ export HOME_DEV=../LedgerSMB/.local/home
 
 Three commands exist to run tests:
 
-* `make test`\
-   Runs the tests in the `t/` directory
-* `make devtest`\
-   Runs the tests in the `t/` and `xt/` directories
-* `make pherkin`\
-  Runs the tests `xt/**/*.feature`
-\
-The set of tests to be run can be restricted using the `TESTS` Makefile
-variable:
+```sh
+make test # Runs the tests in the `t/` directory
+```
+
+```sh
+make devtest # Runs the tests in the `t/` and `xt/` directories
+```
+
+```sh
+make pherkin # Runs the tests `xt/**/*.feature`
+```
+
+The set of tests to be run can be restricted setting the `TESTS` Makefile
+variable. For example:
 
 ```bash
 make test TESTS=t/01-load.t
+make devtest TESTS=xt/66-cucumber/01-basic/change_password.feature
 ```
 
-The combination of the `lsmb-dev` command and the use of `make` takes care
-of making sure the tests are being run inside the `ldmaster_lsmb` docker
-container.
+### lsmb-dev
+
+The `LedgerSMB/Makefile` applies some magic to make sure certain `make` commands are actually run inside the `ldmaster_lsmb` docker container using the `ldd/lsmb-dev` bash shell script.
+
+Some developers prefer to add `ldd/lsmb-dev` to their path. One way to do that is to add a symbolic link in the `~/bin` directory.  For example:
+
+```sh
+cd ~
+mkdir bin	# If it does not exist.
+ln -s -f -v /home/${USER}/ldd/lsmb-dev /home/${USER}/bin/lsmb-dev
+```
+Then exit and log back in so Ubuntu adds the `~/bin` directory into the `$PATH` variable.
+
+This allows the user to use `lsmb-dev` directly without always having to type `../ldd/lsmb-dev`. Note that `lsmb-dev` must be used from within the `LedgerSMB` directory (using the Quick Start script) or from within another valid LedgerSMB repository.
 
 ### Restarting LedgerSMB after making (Perl) edits
 
@@ -182,7 +250,8 @@ comes up with different IP addresses on the containers than the original
 
 The database gets stored in RAM for performance reasons. If however,
 you want/need to retain databases between container restarts, you can
-change the backing storage to harddisk/ssd by changing
+change the backing storage to harddisk/ssd by changing the end of `docker-compose.yml` in `ledgersmb-dev-docker` repository clone before the initial startup from
+
 
 ```yaml
 volumes:
@@ -240,9 +309,9 @@ re-run them -- but isn't a risk to be taken in production).
 
 ## MailHog
 
-The default configuration, all mail sent from ledgersmb is 'caught' by
+The default configuration, all mail sent from LedgerSMB is 'caught' by
 [MailHog](https://github.com/mailhog/MailHog). This allows e-mail
-functionaility to be tested without sending real messages over the
+functionality to be tested without sending real messages over the
 internet.
 
 MailHog traps all messages, providing a web UI and API to view or retrieve
@@ -266,5 +335,5 @@ Running:
 ```
 
 Will create a new docker context for the specified perl version, from
-which an image can be built and used in place of the oficial
+which an image can be built and used in place of the official
 `ledgersmbdev/ledgersmb-dev-lsmb` image.
