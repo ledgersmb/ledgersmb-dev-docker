@@ -20,8 +20,9 @@ for specific feature branches.
 ## Quick Start Prerequisites
 
 The Quick Start shell script below will install everything necessary to develop and test
-LedgerSMB. This script should work with any linux system that has
+LedgerSMB. This script should work with any linux distribution that has
 `docker` and `make` installed and where the current `$USER` is in the docker group. 
+
 These prerequisites can be met using the following on Ubuntu:
 
 ```sh
@@ -32,7 +33,13 @@ sudo usermod -a -G docker $USER
 ## Quick Start (from scratch)
 
 The following bash shell script was tested on Ubuntu 22.04. It installs LedgerSMB and runs
-the development test suite.  Details about each step appear below the script.
+the LedgerSMB test suites.  
+
+All further instructions assumes that this script is run from the `$USERS` `$HOME` directory and that the user is NOT the root user.
+
+The Quick Start script only works after commit fdbc05543751ec5fa560587dcafd9cdb0d6ef397 (15 August 2022) in the LedgerSMB master branch. Prior to that the directories `logs` and `screens` were not present in the LedgerSMB repository and needed to added manually.
+
+Details about each step appear below the script.
 
 ```sh
 #!/bin/bash
@@ -40,21 +47,20 @@ set -e -x
 
 # Not for use in Production.
 
-# Clone the LedgerSMB git master repository
-git clone https://github.com/ledgersmb/LedgerSMB.git
-
-# Set up LedgerSMB configuration for development
-mkdir LedgerSMB/logs
-mkdir LedgerSMB/screens
-cp LedgerSMB/doc/conf/ledgersmb.conf.default LedgerSMB/ledgersmb.conf
-sed -i -e 's/db_namespace = public/db_namespace = xyz/' LedgerSMB/ledgersmb.conf
-sed -i -e 's/host = localhost/host = postgres/' LedgerSMB/ledgersmb.conf
-
 # Clone the LedgerSMB development docker master repository
 git clone https://github.com/ledgersmb/ledgersmb-dev-docker.git ldd
 
-# Start the docker containers
+# Clone the LedgerSMB git master repository
+git clone https://github.com/ledgersmb/LedgerSMB.git
+
 cd LedgerSMB
+
+# Set up LedgerSMB configuration for development
+cp doc/conf/ledgersmb.conf.default ledgersmb.conf
+sed -i -e 's/db_namespace = public/db_namespace = xyz/' ledgersmb.conf
+sed -i -e 's/host = localhost/host = postgres/' ledgersmb.conf
+
+# Start the docker containers
 ../ldd/lsmb-dev master pull
 ../ldd/lsmb-dev master up -d
 
@@ -227,11 +233,21 @@ Some developers prefer to add `ldd/lsmb-dev` to their path. One way to do that i
 ```sh
 cd ~
 mkdir bin	# If it does not exist.
-ln -s -f -v /home/${USER}/ldd/lsmb-dev /home/${USER}/bin/lsmb-dev
+ln -s -f -v $HOME/ldd/lsmb-dev $HOME/bin/lsmb-dev
 ```
-Then exit and log back in so Ubuntu adds the `~/bin` directory into the `$PATH` variable.
 
-This allows the user to use `lsmb-dev` directly without always having to type `../ldd/lsmb-dev`. Note that `lsmb-dev` must be used from within the `LedgerSMB` directory (using the Quick Start script) or from within another valid LedgerSMB repository.
+This works for Unbuntu 22.04, but for Debian, and probably other distributions, you will need to add the following to the `$USER`'s `.profile` or `.bashrc` as appropriate for the distribution.
+
+```sh
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+```
+
+Then log out and log back in so that the `~/bin` directory is added to the `$PATH` variable. 
+
+These changes allows the user to use `lsmb-dev` directly without always having to type `../ldd/lsmb-dev`. Note that `lsmb-dev` must be used from within the `LedgerSMB` directory (using the Quick Start script) or from within another valid LedgerSMB repository.
 
 ### Restarting LedgerSMB after making (Perl) edits
 
