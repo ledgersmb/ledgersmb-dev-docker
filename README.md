@@ -20,26 +20,33 @@ for specific feature branches.
 ## Quick Start Prerequisites
 
 The Quick Start shell script below will install everything necessary to develop and test
-LedgerSMB. This script should work with any linux distribution that has
-`docker` and `make` installed and where the current `$USER` is in the docker group. 
+LedgerSMB. This script should work with any linux distribution that has `docker`, `git`, `make` and all of their prerequisites installed and where the current `$USER` is in the docker group. 
 
-These prerequisites can be met using the following on Ubuntu:
+These prerequisites can generally be met using the following on Ubuntu:
 
 ```sh
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose make
+sudo apt-get -y install make git curl gnupg ca-certificates lsb-release
+
+# If the following fails, see the instructions at
+# https://docs.docker.com/engine/install/debian/
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose
+
 sudo usermod -a -G docker $USER
 ```
 
 ## Quick Start (from scratch)
 
-The following bash shell script was tested on Ubuntu 22.04. It installs LedgerSMB and runs
-the LedgerSMB test suites.  
+The Quick Start bash script installs LedgerSMB using an insecure development configuration and runs the LedgerSMB test suites.  
 
-All further instructions assumes that this script is run from the `$USERS` `$HOME` directory and that the user is NOT the root user.
+It is meant as an example to get a new developer started. The computer used for this install should not be connected directly to a WAN without additional security precautions.
+
+All further instructions assume that this script is run from the `$USER`'s `$HOME` directory and that the user is NOT the root user.
 
 The Quick Start script only works after commit fdbc05543751ec5fa560587dcafd9cdb0d6ef397 (15 August 2022) in the LedgerSMB master branch. Prior to that the directories `logs` and `screens` were not present in the LedgerSMB repository and needed to added manually.
 
 Details about each step appear below the script.
+
+This Quick Start shell script has been tested on Ubuntu 22.04, Debian 11.4, and Fedora 36.
 
 ```sh
 #!/bin/bash
@@ -236,7 +243,7 @@ mkdir bin	# If it does not exist.
 ln -s -f -v $HOME/ldd/lsmb-dev $HOME/bin/lsmb-dev
 ```
 
-This works for Unbuntu 22.04, but for Debian, and probably other distributions, you will need to add the following to the `$USER`'s `.profile` or `.bashrc` as appropriate for the distribution.
+This symbolic link works automatically for Unbuntu 22.04, Debian 11.4, and Fedora 36 after you logoff and login (or restart). For other distributions you might need to add something like following to the `$USER`'s `.profile` or `.bashrc` as appropriate for the distribution.
 
 ```sh
 # set PATH so it includes user's private bin if it exists
