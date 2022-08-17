@@ -46,7 +46,7 @@ The Quick Start script only works after commit fdbc05543751ec5fa560587dcafd9cdb0
 
 Details about each step appear below the script.
 
-This Quick Start shell script has been tested on Ubuntu 22.04, Debian 11.4, and Fedora 36.
+This Quick Start shell script has been tested on Ubuntu 22.04, Debian 11.4, and Fedora 36.  Although we had several problems getting Fedora and Docker to cooperate.
 
 ```sh
 #!/bin/bash
@@ -127,6 +127,21 @@ to be flushed.
 
 A Selenium grid is created with a hub and 5 copies of the browser you selected,
 Chrome is set per default. Firefox and Opera are supported.
+
+### Problems we've seen
+
+1. The `$USER` is not in the `docker` group. This is fixed by executing `sudo usermod -a -G docker $USER` or some variation that works in your distribution.
+
+2. If you get the warning:
+
+	<!-- language: sh -->
+    * The collector has reached the maximum number of concurrent jobs to process.
+    * Testing will continue, but some tests may be running or even complete before they are rendered.
+    * All tests and events will eventually be displayed, and your final results will not be effected.
+
+	To eliminate this warning adjust `LedgerSMB/.yath.rc` by adding `--max-open-jobs 8` or `--no-max-open-jobs` to the `[Test]` section and restart the containers. Be aware that yath can exhaust file handles if max open jobs is set too high. The default is 2 times the number of parallel jobs `-j` set for the tests.
+
+3. On Fedora 36, the firewall, by default, prevents docker-compose from publishing port 4444. So when having problems always make sure the firewall rules are correct. This error reports 'Selenium server did not return proper status...'.
 
 ### Creating JavaScript output
 
@@ -223,6 +238,8 @@ make devtest # Runs the tests in the `t/` and `xt/` directories
 make pherkin # Runs the tests `xt/**/*.feature`
 ```
 
+Note that the `xt/` directory contains both regular tests and `feature` tests. Using `make devtest` runs all tests using `yath` in `t/` and `xt/`.  Using make `pherkin` only runs the `.feature` tests using `pherkin`.
+
 The set of tests to be run can be restricted setting the `TESTS` Makefile
 variable. For example:
 
@@ -230,6 +247,14 @@ variable. For example:
 make test TESTS=t/01-load.t
 make devtest TESTS=xt/66-cucumber/01-basic/change_password.feature
 ```
+
+Tests can be run in parallel using something like:
+
+```bash
+make test TESTS='-j4 t/ xt/'
+``` 
+
+This example runs the tests using 4 parallel jobs.
 
 ### lsmb-dev
 
