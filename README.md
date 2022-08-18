@@ -74,9 +74,6 @@ sed -i -e 's/host = localhost/host = postgres/' ledgersmb.conf
 # Make the runtime javascript (see options below)
 make jsdev # With VUE debugger enabled
 
-# Run the npm server (optional)
-docker exec -t -d ldmaster_lsmb npm run serve
-
 # Run the tests (see options below)
 make devtest       # Single process
 ```
@@ -130,7 +127,7 @@ Chrome is set per default. Firefox and Opera are supported.
 
 ### Problems we've seen
 
-1. The `$USER` is not in the `docker` group. This is fixed by executing `sudo usermod -a -G docker $USER` or some variation that works in your distribution.
+1. The `$USER` is not in the `docker` group. This is fixed by executing `sudo usermod -aG docker $USER` or some variation that works in your distribution.
 
 2. If you get the warning:
 
@@ -141,7 +138,7 @@ Chrome is set per default. Firefox and Opera are supported.
 
 	To eliminate this warning adjust `LedgerSMB/.yath.rc` by adding `--max-open-jobs 8` or `--no-max-open-jobs` to the `[Test]` section and restart the containers. Be aware that yath can exhaust file handles if max open jobs is set too high. The default is 2 times the number of parallel jobs `-j` set for the tests.
 
-3. On Fedora 36, the firewall, by default, prevents docker-compose from publishing port 4444. So when having problems always make sure the firewall rules are correct. This error reports 'Selenium server did not return proper status...'.
+3. When having problems always make sure the firewall rules are correct. On Fedora 36 the firewall, by default, prevents docker-compose from publishing port 4444 and results in the error 'Selenium server did not return proper status...'.
 
 ### Creating JavaScript output
 
@@ -184,7 +181,7 @@ This is started with the command:
 
 ```sh
 # Runs the realtime user interface compiler
-docker exec -t -d ldmaster_lsmb npm run serve
+make serve
 ```
 
 And you can then use a browser to browse your host in development mode
