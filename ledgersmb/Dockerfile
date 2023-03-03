@@ -62,9 +62,10 @@ RUN set -x ; \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
     libmodule-install-perl python3-setuptools libdist-zilla-perl \
     python3-pip python3-wheel python3-urllib3 && \
-  eatmydata pip3 install transifex-client && \
   eatmydata pip3 install --upgrade urllib3
 
+
+RUN curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash ; mv tx /usr/local/bin/
 
 RUN set -x ; \
   curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
