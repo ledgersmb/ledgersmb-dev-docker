@@ -28,9 +28,10 @@ These prerequisites can generally be met using the following on Ubuntu:
 sudo apt-get -y install make git curl gnupg ca-certificates lsb-release
 
 # If the following fails, see the instructions at
-# https://docs.docker.com/engine/install/debian/
+# https://docs.docker.com/engine/install
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose
 
+# Add the current user to the 'docker' group
 sudo usermod -a -G docker $USER
 ```
 
@@ -83,24 +84,27 @@ Note that this Quick Start script is meant to be run from a new user directory a
 After the command `../ldd/lsmb-dev master up -d` is executed above you should see output similar to:
 
 ```
--======================================
--== LedgerSMB 'master'
--== should be available at
--======================================
--host         : http://host:49154
--mailhog      : http://172.28.0.3:8025
--psgi         : http://172.28.0.4:5762
--proxy (login): http://172.28.0.5/login.pl
--proxy (setup): http://172.28.0.5/setup.pl
--dev (login)  : http://172.28.0.4:9000/login.pl
--dev (setup)  : http://172.28.0.4:9000/setup.pl
--======================================
--== Postgres Database can be accessed at
--======================================
--db:  host:49158
--db:  172.28.0.2:5432
--======================================
+======================================
+== LedgerSMB 'master'
+== should be available at
+======================================
+host         : http://host:49156
+mailhog      : http://host:49153
+dev (login)* : http://host:49155/login.pl
+dev (setup)* : http://host:49155/setup.pl
+db           : postgresql://host:49154
+
+mailhog      : http://172.22.0.2:8025
+psgi         : http://172.22.0.4:5762
+proxy (login): http://172.22.0.5/login.pl
+proxy (setup): http://172.22.0.5/setup.pl
+dev (login)* : http://172.22.0.4:9000/login.pl
+dev (setup)* : http://172.22.0.4:9000/setup.pl
+db           : postgresql://172.22.0.3:5432
+======================================
+* Only available if 'make serve' is running
 ```
+
 Note that without further customization, as described below, the ports are chosen randomly with each container start up. So your ports will likely be different.
 
 Ten containers are created:
@@ -160,32 +164,29 @@ After editing the code in `UI/js-src/`, one of these commands needs to be re-run
 ### Accessing LedgerSMB
 
 As per the example above, you should be able to browse to your host at
-<http://host:32452/setup.pl> if you want to go through the proxy or at
+<http://host:49156/setup.pl> if you want to go through the proxy or at
 <http://172.20.0.6/setup.pl> to go directly and create a test database.
 The default password of the `postgres` user is `abc`.
+
+Note that the `host` connection uses a proxy which will redirect "/" to "/login.pl".
 
 Similarly, after you create a test company using `setup.pl`, browsing to
 <http://172.20.0.6/login.pl> allows to log into the company.
 
-The Postgres database is made available at <http://host:45632> on the example
-above, should you want to browse it.
+The Postgres database is made available and can be connected to using pgsql connection URL <postgresql://postgres@host:49154>.
 
-All host ports are assigned randomly on available ports to not clash with the
-host but this can be overridden
+Without a `.local/.env` file as described in the next section, all host ports are assigned randomly so they will not clash when running multiple parallel test environments. The `.local/.env` is not present by default and must be added by the developer.
 
 LedgerSMB offers the possibility to run in development mode, where you can
 see the modifications done in the user interface code be installed and shown
-in realtime.
-
-This is started with the command:
+in realtime. This is started with the command:
 
 ```sh
 # Runs the realtime user interface compiler
 make serve
 ```
 
-And you can then use a browser to browse your host in development mode
-at <http://host:31845>, <http://host:31845/login.pl> or <http://host:31845/setup.pl>.
+You can then use a browser to browse your host in development mode using the `dev` connections shown above.
 
 ### Environment variables
 
@@ -224,10 +225,12 @@ export HOME_DEV=../LedgerSMB/.local/home
 Three commands exist to run tests:
 
 ```sh
+# Does not create a database
 make test # Runs the tests in the `t/` directory
 ```
 
 ```sh
+# Creates a database for the `xt/` tests.
 make devtest # Runs the tests in the `t/` and `xt/` directories
 ```
 
@@ -235,9 +238,11 @@ make devtest # Runs the tests in the `t/` and `xt/` directories
 make pherkin # Runs the tests `xt/**/*.feature`
 ```
 
-Note that the `xt/` directory contains both regular tests and `feature` tests. Using `make devtest` runs all tests using `yath` in `t/` and `xt/`.  Using make `pherkin` only runs the `.feature` tests using `pherkin`.
+Note that the `xt/` directory contains both regular tests and `feature` tests. Using `make devtest` runs all tests using `yath` in `t/` and `xt/`.  
 
-The set of tests to be run can be restricted setting the `TESTS` Makefile
+Using make `pherkin` only runs the `.feature` tests using `pherkin`. The `pherkin` tests provide more detail, but do not parallelize as well and therefor are slower.
+
+The set of tests to be run can be restricted by setting the `TESTS` Makefile
 variable. For example:
 
 ```bash
@@ -245,13 +250,14 @@ make test TESTS=t/01-load.t
 make devtest TESTS=xt/66-cucumber/01-basic/change_password.feature
 ```
 
-Tests can be run in parallel using something like:
+Tests can be run in parallel using:
 
 ```bash
-make test TESTS='-j4 t/ xt/'
+make devtest TESTS='-j4 t/ xt/'
+make test TESTS='-j4 t/'
 ``` 
 
-This example runs the tests using 4 parallel jobs.
+This example runs the tests using 4 parallel jobs.  There are significant speedups when running tests in parallel.
 
 ### lsmb-dev
 
