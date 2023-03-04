@@ -9,7 +9,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  pg_latest: "14"
 
 jobs:
   ledgersmb:
@@ -82,7 +81,6 @@ jobs:
       with:
         build-args: |
           PGBASE=${{ matrix.pg_version }}
-          PGLATEST=${{ env.pg_latest }}
         context: postgres/
         push: true
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:${{ matrix.pg_version }}
