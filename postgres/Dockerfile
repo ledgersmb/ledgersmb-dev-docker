@@ -1,3 +1,4 @@
+ARG         PGBASE
 FROM        postgres:$PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
