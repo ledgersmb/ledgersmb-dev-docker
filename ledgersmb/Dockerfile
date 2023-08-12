@@ -71,7 +71,8 @@ RUN set -x ; \
   curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
   bash ./setup && rm ./setup && \
   eatmydata apt-get -y install nodejs && \
-  eatmydata npm install -g uglify-js@">=2.0 <3.0"
+  eatmydata npm install -g uglify-js@">=2.0 <3.0" && \
+  eatmydata npm install -g yarn
 
 RUN cat /etc/os-release ; \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
