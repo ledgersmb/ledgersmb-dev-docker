@@ -421,4 +421,4 @@ Then you are good to go.  If your are running the Docker image on a server or vi
 	../ldd/lsmb-dev master pull
 	../ldd/lsmb-dev master up -d
 	```
-8. Now any changes you make to the git repository where you did `git clone https://github.com/<your Github account name>/LedgerSMB.git` will take effect whenever you issue `../ldd/lsmb-dev master pull`.
+8. Now any changes you make to the git repository where you did `git clone https://github.com/<your Github account name>/LedgerSMB.git` will automatically reload the LedgerSMB service so they take effect almost instantly upon saving of changed files.
