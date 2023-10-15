@@ -388,3 +388,37 @@ Running:
 Will create a new docker context for the specified perl version, from
 which an image can be built and used in place of the official
 `ledgersmbdev/ledgersmb-dev-lsmb` image.
+
+## Development, Test, Debug, & Commit Cycle Overview
+
+Each LedgerSMB core developer has their own way of working. This section exists to give new developers some ideas to get started quickly and is not necessarily how the core developers work.  
+
+New developers are likely to have to do some additional research for each of these steps.  That research is critical in productively contributing to LedgerSMB.
+
+1. Create a Github account if you do not already have one.
+2. Clone [the LedgerSMB repository](https://github.com/ledgersmb/LedgerSMB.git) into your own Github account.
+3. In your development and test target environment create and get working the Docker development and testing container as described above, which by default uses the [LedgerSMB Github repository](https://github.com/ledgersmb/LedgerSMB.git). The important part of this step is to get a working LedgerSMB development docker container before you proceed further.  
+4. Make sure you can login, setup a new company, create customers, etc.
+5. Decide where you local work repository is going to reside. If your running GUI tools in the same machine as when you executed:
+
+	```bash
+	# Clone the LedgerSMB git master repository
+	git clone https://github.com/ledgersmb/LedgerSMB.git
+	```
+Then you are good to go.  If your are running the Docker image on a server or virtual machine without GUI tools then you will need to clone your LedgerSMB repository someplace where you can more easily edit it.
+6. Shutdown the docker images. `../ldd/lsmb-dev master down`
+6. Change the source of the code from the main LedgerSMB repository to your own repository. To do this re-execute the commands as described above, but change the cline command to point to your repository as in:
+
+	```bash
+	# Clone your new Github LedgerSMB git master repository
+	git clone https://github.com/<your Github account name>/LedgerSMB.git
+	```
+	This easily done by just deleting the original clone directory and recloning it with your repository.
+7. Restart the docker containers.
+
+	```bash
+	# Start the docker containers
+	../ldd/lsmb-dev master pull
+	../ldd/lsmb-dev master up -d
+	```
+8. Now any changes you make to the git repository where you did `git clone https://github.com/<your Github account name>/LedgerSMB.git` will automatically reload the LedgerSMB service so they take effect almost instantly upon saving of changed files.
