@@ -1,8 +1,11 @@
-FROM        debian:bullseye
+FROM        debian:bookworm
 LABEL       maintainer="Freelock john@freelock.com"
 
 ARG         DEBIAN_FRONTEND=noninteractive
-ARG         branches="1.6,1.7,1.8,1.9,master"
+ARG         branches="1.8,1.9,1.10,1.11,master"
+ARG         NODE_MAJOR=20
+# 1.9 started using webpack. as soon as we drop 1.8, we can
+# drop installing 'uglify'
 
 
 # Install Perl, Tex, Starman, psql client, and all dependencies
@@ -60,19 +63,19 @@ RUN set -x ; \
     libtest-dependencies-perl libtest-exception-perl libtest-trap-perl \
     libperl-critic-perl libmodule-cpanfile-perl libfile-util-perl \
     libclass-trigger-perl libclass-accessor-lite-perl libtest-requires-perl \
-    libmodule-install-perl python3-setuptools libdist-zilla-perl \
-    python3-pip python3-wheel python3-urllib3 && \
-  eatmydata pip3 install --upgrade urllib3
+    libmodule-install-perl python3-setuptools libdist-zilla-perl
 
 
 RUN curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash ; mv tx /usr/local/bin/
 
 RUN set -x ; \
-  curl -L https://deb.nodesource.com/setup_16.x -o ./setup && \
-  bash ./setup && rm ./setup && \
+  mkdir -p /etc/apt/keyrings && \
+  (curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg ) && \
+  (echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list) && \
+  eatmydata apt-get update && \
   eatmydata apt-get -y install nodejs && \
-  eatmydata npm install -g uglify-js@">=2.0 <3.0" && \
-  eatmydata npm install -g yarn
+  eatmydata npm install -g yarn && \
+  eatmydata npm install -g uglify-js@">=2.0 <3.0"
 
 RUN cat /etc/os-release ; \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
