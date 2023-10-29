@@ -1,6 +1,8 @@
 name: Docker Image CI
 
 on:
+  repository_dispatch:
+    types: [ master-updated ]
   workflow_dispatch:
   push:
     branches:
