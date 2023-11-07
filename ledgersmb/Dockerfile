@@ -145,6 +145,10 @@ RUN set -x ; \
   cd /srv && rm -rf autodoc
 # postgresql_autodoc requires DBI and DBD::Pg too, but those are already installed
 
+# Math::BigFloat 1.999838 from Bookworm is broken for LedgerSMB
+RUN set -x ; \
+  eatmydata cpanm --quiet --notest --reinstall \
+    Math::BigFloat
 
 # Configure outgoing mail to use host, other run time variable defaults
 
