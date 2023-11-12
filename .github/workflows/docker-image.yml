@@ -36,6 +36,17 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-ledgersmb:latest
 
+    - name: Clean GHCR.io registry 'dev-ledgersmb' package
+      uses: actions/delete-package-versions@v4
+      with:
+        package-name: dev-ledgersmb
+        package-type: container
+        delete-only-untagged-versions: true
+        min-versions-to-keep: 0
+        num-old-versions-to-delete:
+        ignore-versions:
+        delete-only-pre-release-versions:
+
   proxy:
     runs-on: ubuntu-latest
     permissions:
@@ -58,6 +69,17 @@ jobs:
         context: nginx/
         push: true
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-nginx:latest
+
+    - name: Clean GHCR.io registry 'dev-nginx' package
+      uses: actions/delete-package-versions@v4
+      with:
+        package-name: dev-nginx
+        package-type: container
+        delete-only-untagged-versions: true
+        min-versions-to-keep: 0
+        num-old-versions-to-delete:
+        ignore-versions:
+        delete-only-pre-release-versions:
 
   postgres:
     runs-on: ubuntu-latest
@@ -86,3 +108,14 @@ jobs:
         context: postgres/
         push: true
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:${{ matrix.pg_version }}
+
+    - name: Clean GHCR.io registry 'dev-postgres' package
+      uses: actions/delete-package-versions@v4
+      with:
+        package-name: dev-postgres
+        package-type: container
+        delete-only-untagged-versions: true
+        min-versions-to-keep: 0
+        num-old-versions-to-delete:
+        ignore-versions:
+        delete-only-pre-release-versions:
