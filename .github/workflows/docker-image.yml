@@ -37,7 +37,7 @@ jobs:
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-ledgersmb:latest
 
     - name: Clean GHCR.io registry 'dev-ledgersmb' package
-      uses: actions/delete-package-versions@v4
+      uses: actions/delete-package-versions@v5
       with:
         package-name: dev-ledgersmb
         package-type: container
@@ -71,7 +71,7 @@ jobs:
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-nginx:latest
 
     - name: Clean GHCR.io registry 'dev-nginx' package
-      uses: actions/delete-package-versions@v4
+      uses: actions/delete-package-versions@v5
       with:
         package-name: dev-nginx
         package-type: container
@@ -110,7 +110,7 @@ jobs:
         tags: ${{ env.REGISTRY }}/ledgersmb/dev-postgres:${{ matrix.pg_version }}
 
     - name: Clean GHCR.io registry 'dev-postgres' package
-      uses: actions/delete-package-versions@v4
+      uses: actions/delete-package-versions@v5
       with:
         package-name: dev-postgres
         package-type: container
