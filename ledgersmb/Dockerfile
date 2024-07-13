@@ -23,7 +23,7 @@ RUN set -x ; \
   apt-get -y update && \
   apt-get -y install curl ca-certificates \
                      wget gnupg eatmydata && \
-  eatmydata apt-get -y install \
+  apt-get -y install \
     lsb-release \
     libpq5 \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
@@ -73,34 +73,34 @@ RUN set -x ; \
   mkdir -p /etc/apt/keyrings && \
   (curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg ) && \
   (echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list) && \
-  eatmydata apt-get update && \
-  eatmydata apt-get -y install nodejs && \
-  eatmydata npm install -g yarn && \
-  eatmydata npm install -g uglify-js@">=2.0 <3.0"
+  apt-get update && \
+  apt-get -y install nodejs && \
+  npm install -g yarn && \
+  npm install -g uglify-js@">=2.0 <3.0"
 
 RUN cat /etc/os-release ; \
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
-  eatmydata apt-get -y update && \
-  eatmydata apt-get -y install postgresql-client
+  apt-get -y update && \
+  apt-get -y install postgresql-client
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
 #  echo "deb http://deb.debian.org/debian/ sid main non-free contrib" >> /etc/apt/sources.list && \
-# RUN eatmydata apt-get -y -t sid install postgresql-autodoc
+# RUN apt-get -y -t sid install postgresql-autodoc
 
 # Additional (testing) dependencies up to and including 1.9
-RUN eatmydata apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
+RUN apt-get -y install libpath-class-perl libtype-tiny-perl libtype-tiny-xs-perl libclass-factory-perl libyaml-syck-perl libmoox-handlesvia-perl libpod-coverage-perl libhash-merge-perl libpod-pom-perl libfile-share-perl libtext-diff-perl libhtml-selector-xpath-perl libtest-pod-perl libdbd-mock-perl libx12-parser-perl liblog-any-adapter-log4perl-perl libtest-pod-coverage-perl
 
 
 # Additional dependency up to and including 1.7
-RUN eatmydata apt-get -y install libmime-lite-perl
+RUN apt-get -y install libmime-lite-perl
 
 # Additional dependency up to and including 1.5
-RUN eatmydata apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
+RUN apt-get -y install libcgi-simple-perl libhttp-exception-perl libtest-nowarnings-perl
 
 # Additional dependency up to and including 1.6
-RUN eatmydata apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
+RUN apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-perl libtest-differences-perl libparallel-forkmanager-perl libmodule-util-perl
 
 
 
@@ -122,7 +122,7 @@ RUN set -x ; \
   bash -c 'for branch in ${branches//,/ }; do \
     cd /srv/ledgersmb && \
     git checkout $branch && \
-    eatmydata cpanm --quiet --notest --metacpan \
+    cpanm --quiet --notest --metacpan \
     --with-develop \
     --with-feature=starman \
     --with-feature=latex-pdf-images \
@@ -132,12 +132,12 @@ RUN set -x ; \
     --with-feature=edi \
     --installdeps . ; \
   done' && \
-  eatmydata cpanm --quiet --notest \
+  cpanm --quiet --notest \
     URL::Encode URL::Encode::XS \
     Pod::ProjectDocs \
     DBD::Mock \
     Devel::Cover Devel::Cover::Report::Coveralls && \
-  eatmydata cpanm --quiet --notest \
+  cpanm --quiet --notest \
     HTML::Template Term::ReadKey ; \
   cd /srv && rm -rf ~/.cpanm ledgersmb && mkdir ledgersmb && \
   git clone https://github.com/cbbrowne/autodoc.git && \
@@ -148,7 +148,7 @@ RUN set -x ; \
 
 # Math::BigFloat 1.999838 from Bookworm is broken for LedgerSMB
 RUN set -x ; \
-  eatmydata cpanm --quiet --notest --reinstall \
+  cpanm --quiet --notest --reinstall \
     Math::BigFloat
 
 # Configure outgoing mail to use host, other run time variable defaults
