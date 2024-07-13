@@ -3,7 +3,7 @@ version: '3.2'
 networks:
   grid:
     driver: bridge
-    internal: yes
+    internal: true
 
 services:
 
