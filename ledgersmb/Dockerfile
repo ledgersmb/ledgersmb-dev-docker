@@ -173,6 +173,8 @@ RUN chmod +x /usr/local/bin/start.sh && \
     mkdir -p /var/www && \
     chown www-data /var/www
 
+RUN ldconfig -v
+
 # Work around an aufs bug related to directory permissions:
 RUN mkdir -p /tmp && \
   chmod 1777 /tmp
