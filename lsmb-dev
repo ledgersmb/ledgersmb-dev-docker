@@ -5,6 +5,19 @@
 scriptdir=$(dirname "$(readlink -f "$0")")
 scriptname=$(readlink -f "$0")
 
+if [[ -n "$(which docker-compose)" ]];
+then
+  DOCKER_COMPOSE=docker-compose
+else
+  if docker compose >/dev/null 2>/dev/null
+  then
+    DOCKER_COMPOSE="docker compose"
+  else
+    echo "Error: Missing 'docker compose' or 'docker-compose'" 1>&2
+    exit 1
+  fi
+fi
+
 [[ -d $HOME/bin ]] && [[ ! -e $HOME/bin/lsmb-dev ]] && ln -s $scriptname $HOME/bin/lsmb-dev
 if [ -f $scriptdir/.local/.env ]; then
     source $scriptdir/.local/.env
@@ -135,7 +148,7 @@ elif test "$1" = "status" ; then
 fi
 
 # generate and start the containers
-USER="$(id -u):$(id -g)" docker-compose \
+USER="$(id -u):$(id -g)" $DOCKER_COMPOSE \
     -f "$F" \
     -f $_CWD/selenium/docker-compose.yml \
     -f $_CWD/selenium/docker-compose-$BROWSER.yml \
