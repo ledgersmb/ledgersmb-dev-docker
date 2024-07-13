@@ -4,7 +4,7 @@ LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
 ARG PGBASE
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-    apt-get -y install postgresql-$PG_BASE-pgtap && \
+    apt-get -y install postgresql-$PGBASE-pgtap && \
     apt-get -y autoremove && \
     apt-get -y autoclean && \
     rm -rf /var/lib/apt/lists/* && \
