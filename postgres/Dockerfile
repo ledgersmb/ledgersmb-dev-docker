@@ -1,9 +1,10 @@
-ARG         PGBASE
+ARG         PGBASE=14
 FROM        postgres:$PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
+ARG PGBASE
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-    apt-get -y install postgresql-$PG_MAJOR-pgtap && \
+    apt-get -y install postgresql-$PG_BASE-pgtap && \
     apt-get -y autoremove && \
     apt-get -y autoclean && \
     rm -rf /var/lib/apt/lists/* && \
