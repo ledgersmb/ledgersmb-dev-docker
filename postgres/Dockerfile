@@ -2,9 +2,9 @@ ARG         PGBASE=14
 FROM        postgres:$PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
-ARG PGBASE
+# Note: $PG_MAJOR comes from the parent postgres image
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y update && \
-    apt-get -y install postgresql-$PGBASE-pgtap && \
+    apt-get -y install postgresql-$PG_MAJOR-pgtap && \
     apt-get -y autoremove && \
     apt-get -y autoclean && \
     rm -rf /var/lib/apt/lists/* && \
