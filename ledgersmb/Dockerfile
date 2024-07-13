@@ -25,6 +25,7 @@ RUN set -x ; \
                      wget gnupg eatmydata && \
   eatmydata apt-get -y install \
     lsb-release \
+    libpq5 \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
     libdatetime-perl libdatetime-format-strptime-perl \
