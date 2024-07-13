@@ -19,7 +19,7 @@ services:
       - default
 
   db:
-    image: ghcr.io/ledgersmb/dev-postgres
+    image: ghcr.io/ledgersmb/dev-postgres:${LSMB_DEVDB:-latest}
     hostname: db
     container_name: ${COMPOSE_PROJECT_NAME}_db
     environment:
