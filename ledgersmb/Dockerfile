@@ -23,9 +23,13 @@ RUN set -x ; \
   apt-get -y update && \
   apt-get -y install curl ca-certificates \
                      wget gnupg eatmydata && \
+  cat /etc/os-release ; \
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+  (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
+  apt-get -y update && \
   apt-get -y install \
     lsb-release \
-    libpq5 \
+    postgresql-client libpq5 \
     libauthen-sasl-perl libcgi-emulate-psgi-perl libconfig-inifiles-perl \
     libcookie-baker-perl libdbd-pg-perl libdbi-perl libdata-uuid-perl \
     libdatetime-perl libdatetime-format-strptime-perl \
@@ -77,12 +81,6 @@ RUN set -x ; \
   apt-get -y install nodejs && \
   npm install -g yarn && \
   npm install -g uglify-js@">=2.0 <3.0"
-
-RUN cat /etc/os-release ; \
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-  (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
-  apt-get -y update && \
-  apt-get -y install postgresql-client
 
 # Including postgresql-autodoc in the above total lump didn't work;
 #   splitting out did...
