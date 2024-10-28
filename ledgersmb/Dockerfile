@@ -2,7 +2,7 @@ FROM        debian:trixie
 LABEL       maintainer="Freelock john@freelock.com"
 
 ARG         DEBIAN_FRONTEND=noninteractive
-ARG         branches="1.8,1.9,1.10,1.11,master"
+ARG         branches="1.8,1.9,1.10,1.11,1.12,master"
 ARG         NODE_MAJOR=20
 # 1.9 started using webpack. as soon as we drop 1.8, we can
 # drop installing 'uglify'
