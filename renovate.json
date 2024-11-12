@@ -5,29 +5,31 @@
     ],
     "packageRules": [
         {
-            "matchPackagePatterns": [
-                "*"
-            ],
             "matchUpdateTypes": [
                 "minor",
                 "patch"
             ],
             "groupName": "all non-major dependencies",
             "groupSlug": "all-minor-patch",
-            "automerge": true
-        },
-        {
-            "matchPackagePatterns": ["^selenium/"],
-            "allowedVersions": "<4"
-        },
-        {
-            "matchPackagePatterns": [
+            "automerge": true,
+            "matchPackageNames": [
                 "*"
-            ],
+            ]
+        },
+        {
+            "allowedVersions": "<4",
+            "matchPackageNames": [
+                "/^selenium//"
+            ]
+        },
+        {
             "matchUpdateTypes": [
                 "major"
             ],
-            "automerge": false
+            "automerge": false,
+            "matchPackageNames": [
+                "*"
+            ]
         }
     ],
     "timezone": "Etc/Greenwich",
