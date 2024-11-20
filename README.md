@@ -65,7 +65,10 @@ cd LedgerSMB
 
 # Set up LedgerSMB configuration for development
 cp doc/conf/ledgersmb.conf.default ledgersmb.conf
+
+# db_namespace must be set to xyz in order for tests to run
 sed -i -e 's/db_namespace = public/db_namespace = xyz/' ledgersmb.conf
+
 sed -i -e 's/host = localhost/host = postgres/' ledgersmb.conf
 
 # Start the docker containers
