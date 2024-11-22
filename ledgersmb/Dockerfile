@@ -151,6 +151,9 @@ RUN set -x ; \
 
 # Configure outgoing mail to use host, other run time variable defaults
 
+## TEST2 warning suppression:
+ENV TEST2_UUID_NO_WARN yes
+
 ## sSMTP
 ENV SSMTP_ROOT ar@example.com
 ENV SSMTP_MAILHUB 172.17.0.1
