@@ -24,8 +24,8 @@ RUN set -x ; \
   apt-get -y install curl ca-certificates \
                      wget gnupg eatmydata && \
   cat /etc/os-release ; \
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-  (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -) && \
+  (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --output /etc/apt/keyrings/postgresql.gpg --dearmor -) && \
+  echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
   apt-get -y update && \
   apt-get -y install \
     lsb-release \
