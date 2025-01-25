@@ -30,7 +30,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@7e094594beda23fc8f21fa31049f4b203e51096b
+      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
       with:
         context: ledgersmb/
         push: true
@@ -53,7 +53,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@7e094594beda23fc8f21fa31049f4b203e51096b
+      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
       with:
         context: nginx/
         push: true
@@ -79,7 +79,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@7e094594beda23fc8f21fa31049f4b203e51096b
+      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
       with:
         build-args: |
           PGBASE=${{ matrix.pg_version }}
