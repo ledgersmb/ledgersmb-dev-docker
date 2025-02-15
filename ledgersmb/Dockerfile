@@ -22,7 +22,7 @@ RUN set -x ; \
        >> /etc/apt/apt.conf && \
   apt-get -y update && \
   apt-get -y install curl ca-certificates \
-                     wget gnupg eatmydata && \
+                     wget gnupg jq && \
   cat /etc/os-release ; \
   (wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --output /etc/apt/keyrings/postgresql.gpg --dearmor -) && \
   echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt/ $(grep VERSION_CODENAME /etc/os-release | cut -d= -f2 )-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
