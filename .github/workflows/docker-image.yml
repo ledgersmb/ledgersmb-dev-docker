@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pg_version: [ "latest", "14", "13", "12" ]
+        pg_version: [ "latest", "17", "16", "15", "14", "13", "12" ]
     permissions:
       contents: read
       packages: write
