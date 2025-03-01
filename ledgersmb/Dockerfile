@@ -107,7 +107,7 @@ RUN apt-get -y install liblist-someutils-perl libtest-warn-perl libtest-most-per
 #  cd .. && rm -rf autodoc
 
 # Build time variables
-ENV NODE_PATH /usr/lib/node_modules
+ENV NODE_PATH=/usr/lib/node_modules
 ARG CACHEBUST
 
 
@@ -151,21 +151,21 @@ RUN set -x ; \
 # Configure outgoing mail to use host, other run time variable defaults
 
 ## TEST2 warning suppression:
-ENV TEST2_UUID_NO_WARN yes
+ENV TEST2_UUID_NO_WARN=yes
 
 ## sSMTP
-ENV SSMTP_ROOT ar@example.com
-ENV SSMTP_MAILHUB 172.17.0.1
-ENV SSMTP_HOSTNAME 172.17.0.1
-#ENV SSMTP_USE_STARTTLS
-#ENV SSMTP_AUTH_USER
-#ENV SSMTP_AUTH_PASS
-ENV SSMTP_FROMLINE_OVERRIDE YES
-#ENV SSMTP_AUTH_METHOD
+ENV SSMTP_ROOT=ar@example.com
+ENV SSMTP_MAILHUB=172.17.0.1
+ENV SSMTP_HOSTNAME=172.17.0.1
+#ENV SSMTP_USE_STARTTLS=
+#ENV SSMTP_AUTH_USER=
+#ENV SSMTP_AUTH_PASS=
+ENV SSMTP_FROMLINE_OVERRIDE=YES
+#ENV SSMTP_AUTH_METHOD=
 
-ENV POSTGRES_HOST postgres
-ENV POSTGRES_PORT 5432
-ENV DEFAULT_DB lsmb
+ENV POSTGRES_HOST=postgres
+ENV POSTGRES_PORT=5432
+ENV DEFAULT_DB=lsmb
 
 COPY start.sh /usr/local/bin/start.sh
 
