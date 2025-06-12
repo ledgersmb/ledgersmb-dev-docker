@@ -17,6 +17,8 @@ test LedgerSMB. This container currently supports versions 1.6, 1.7,
 1.8, 1.9 and master -- the image gets updated regularly to include dependencies
 for specific feature branches.
 
+❌ Do not use unofficial or AI-generated Docker Compose examples. These are often incomplete, break silently, or skip required services.
+
 ## Quick Start Prerequisites
 
 The Quick Start shell script below will install everything necessary to develop and test
