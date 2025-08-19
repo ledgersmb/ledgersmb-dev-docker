@@ -1,4 +1,4 @@
-FROM        nginx:1.28-alpine
+FROM        nginx:1.29-alpine
 MAINTAINER  LedgerSMB  devel@lists.ledgersmb.org
 
 COPY nginx.conf /etc/nginx/nginx.conf
