@@ -1,4 +1,4 @@
-ARG         PGBASE=17
+ARG         PGBASE=18
 FROM        postgres:$PGBASE
 LABEL       maintainer="LedgerSMB devel@lists.ledgersmb.org"
 
